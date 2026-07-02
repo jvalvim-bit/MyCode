@@ -1672,11 +1672,29 @@ function renderProfileWidgets(){
     const levelInfo = getUserLevelProgress();
     const unlockedCount = ACHIEVEMENT_DEFS.filter(isAchievementUnlocked).length;
     const equipped = normalizeEquippedAchievements();
+    const nextText = levelInfo.level >= MAX_USER_LEVEL
+      ? txt('nível máximo alcançado', 'max level reached')
+      : txt(levelInfo.remaining + ' XP para o próximo level', levelInfo.remaining + ' XP to next level');
     badgeList.innerHTML =
-      '<div class="level-side-summary"><div><span>' + txt('nível do aluno', 'student level') + '</span><strong>Lv. ' + levelInfo.level + '</strong></div><div class="level-side-bar"><i style="width:' + levelInfo.pct + '%"></i></div><small>' + levelInfo.current + '/' + levelInfo.needed + ' XP</small></div>' +
-      '<div class="achievement-summary-row"><div><strong>' + txt('Conquistas equipadas', 'Equipped achievements') + '</strong><small>' + txt('Escolha até 5 para aparecerem no painel.', 'Choose up to 5 to show on your dashboard.') + '</small></div><span class="achievement-count-pill">' + equipped.length + '/' + ACHIEVEMENT_EQUIP_LIMIT + '</span></div>' +
-      '<div class="equipped-achievement-grid">' + renderEquippedSlots() + '</div>' +
-      '<button type="button" class="achievement-manage-btn" id="openAchievementsBtn">' + txt('Gerenciar conquistas', 'Manage achievements') + ' · ' + unlockedCount + '/' + ACHIEVEMENT_DEFS.length + '</button>';
+      '<div class="student-profile-panel">' +
+        '<div class="student-profile-hero">' +
+          '<div class="student-avatar-orb"><img src="' + BYTE_IMAGE_SRC + '" alt="Byte"><span>Lv ' + levelInfo.level + '</span></div>' +
+          '<div class="student-profile-copy"><div class="student-profile-kicker">' + txt('perfil do aluno', 'student profile') + '</div><strong>' + txt('Level ', 'Level ') + levelInfo.level + '</strong><p>' + nextText + '</p></div>' +
+        '</div>' +
+        '<div class="student-level-console">' +
+          '<div class="student-level-row"><span>XP</span><strong>' + levelInfo.current + '/' + levelInfo.needed + '</strong></div>' +
+          '<div class="level-side-bar premium-level-bar"><i style="width:' + levelInfo.pct + '%"></i></div>' +
+          '<div class="student-level-meta"><span>' + txt('cada tarefa: +50 XP', 'each task: +50 XP') + '</span><span>' + txt('projeto: +2 levels', 'project: +2 levels') + '</span></div>' +
+        '</div>' +
+        '<div class="student-profile-stats">' +
+          '<div><strong>' + completedCount + '/' + tasks.length + '</strong><span>' + txt('tarefas', 'tasks') + '</span></div>' +
+          '<div><strong>' + dominated + '</strong><span>' + txt('dominadas', 'mastered') + '</span></div>' +
+          '<div><strong>' + review + '</strong><span>' + txt('revisões', 'reviews') + '</span></div>' +
+        '</div>' +
+        '<div class="achievement-summary-row premium-achievement-row"><div><strong>' + txt('Conquistas equipadas', 'Equipped achievements') + '</strong><small>' + txt('Até 5 aparecem no seu perfil do painel.', 'Up to 5 appear on your dashboard profile.') + '</small></div><span class="achievement-count-pill">' + equipped.length + '/' + ACHIEVEMENT_EQUIP_LIMIT + '</span></div>' +
+        '<div class="equipped-achievement-grid premium-equipped-grid">' + renderEquippedSlots() + '</div>' +
+        '<button type="button" class="achievement-manage-btn premium-manage-btn" id="openAchievementsBtn">' + txt('Gerenciar perfil e conquistas', 'Manage profile achievements') + ' · ' + unlockedCount + '/' + ACHIEVEMENT_DEFS.length + '</button>' +
+      '</div>';
     badgeList.querySelectorAll('[data-achievement-open]').forEach(btn => btn.addEventListener('click', showAchievementsModal));
     const manageBtn = document.getElementById('openAchievementsBtn');
     if(manageBtn) manageBtn.addEventListener('click', showAchievementsModal);
@@ -5303,23 +5321,25 @@ function arenaLeague(rp){ if(rp>=2000)return txt('Diamante','Diamond'); if(rp>=1
 function arenaLeagueKey(rp){ rp=Number(rp)||0; if(rp>=2000)return 'diamond'; if(rp>=1500)return 'platinum'; if(rp>=1000)return 'gold'; if(rp>=500)return 'silver'; return 'bronze'; }
 function arenaRankPixelArt(key){
   const cfg={
-    bronze:{name:'B',a:'#7B421F',b:'#C47A43',c:'#FFD0A1',d:'#3A2114'},
-    silver:{name:'S',a:'#637083',b:'#D8E4F2',c:'#FFFFFF',d:'#263241'},
-    gold:{name:'G',a:'#8C5D05',b:'#FFC83D',c:'#FFF1A8',d:'#3B2600'},
-    platinum:{name:'P',a:'#0B7D83',b:'#7DFFF2',c:'#FFFFFF',d:'#053944'},
-    diamond:{name:'D',a:'#2459B8',b:'#72D6FF',c:'#FFFFFF',d:'#101F53'}
-  }[key]||{name:'B',a:'#7B421F',b:'#C47A43',c:'#FFD0A1',d:'#3A2114'};
+    bronze:{name:'B',label:'BRONZE',a:'#5C321E',b:'#B56B3E',c:'#F2A86F',d:'#2A1710',glow:'rgba(242,168,111,.38)'},
+    silver:{name:'S',label:'SILVER',a:'#516173',b:'#AFC2D8',c:'#F6FBFF',d:'#1D2733',glow:'rgba(216,228,242,.34)'},
+    gold:{name:'G',label:'GOLD',a:'#7C5208',b:'#FFB627',c:'#FFF0A3',d:'#302000',glow:'rgba(255,214,106,.42)'},
+    platinum:{name:'P',label:'PLATINUM',a:'#086B73',b:'#55F2E8',c:'#EFFFFC',d:'#032D33',glow:'rgba(125,255,242,.40)'},
+    diamond:{name:'D',label:'DIAMOND',a:'#173C9A',b:'#51C9FF',c:'#F3FCFF',d:'#071747',glow:'rgba(114,214,255,.46)'}
+  }[key]||{name:'B',label:'BRONZE',a:'#5C321E',b:'#B56B3E',c:'#F2A86F',d:'#2A1710',glow:'rgba(242,168,111,.38)'};
   const px=[];
   const add=(x,y,w,h,fill,op)=>px.push('<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+fill+'"'+(op?' opacity="'+op+'"':'')+'/>');
-  // outer shield silhouette
-  [[14,2,20,4,cfg.c],[10,6,28,4,cfg.b],[6,10,36,8,cfg.b],[4,18,40,12,cfg.a],[8,30,32,8,cfg.a],[12,38,24,6,cfg.d],[18,44,12,4,cfg.d]].forEach(p=>add(p[0],p[1],p[2],p[3],p[4]));
-  // dark contour pixels
-  [[10,2,4,4],[34,2,4,4],[6,6,4,4],[38,6,4,4],[2,14,4,18],[42,14,4,18],[8,34,4,4],[36,34,4,4],[14,42,4,4],[30,42,4,4]].forEach(p=>add(p[0],p[1],p[2],p[3],cfg.d));
-  // highlight and inner badge
-  add(14,10,8,4,cfg.c,.95); add(10,14,8,4,cfg.c,.78); add(28,12,8,4,cfg.c,.72);
-  add(16,18,16,16,'rgba(0,0,0,.26)'); add(20,20,8,4,cfg.c); add(20,28,8,4,cfg.c);
-  // tier letter using blocky text fallback
-  return '<span class="rank-pixel-icon rank-pixel-'+key+'" aria-hidden="true"><svg viewBox="0 0 48 48" shape-rendering="crispEdges" focusable="false">'+px.join('')+'<text x="24" y="30" text-anchor="middle" font-size="12" font-family="monospace" font-weight="900" fill="'+cfg.c+'">'+cfg.name+'</text></svg></span>';
+  // crisp futuristic pixel crest, wider than the old badge so the rank feels like an emblem.
+  [[26,2,20,4,cfg.c],[18,6,36,4,cfg.b],[12,10,48,6,cfg.b],[8,16,56,10,cfg.a],[6,26,60,14,cfg.a],[10,40,52,10,cfg.b],[16,50,40,8,cfg.d],[24,58,24,6,cfg.d]].forEach(p=>add(p[0],p[1],p[2],p[3],p[4]));
+  // hard contour
+  [[22,2,4,4],[46,2,4,4],[14,6,4,4],[54,6,4,4],[8,10,4,6],[60,10,4,6],[4,18,4,22],[66,18,4,22],[10,44,6,6],[58,44,6,6],[16,54,8,4],[50,54,8,4],[24,62,4,4],[46,62,4,4]].forEach(p=>add(p[0],p[1],p[2],p[3],cfg.d));
+  // inner plate and shine
+  add(20,18,32,28,'rgba(0,0,0,.30)');
+  add(24,20,24,6,cfg.d,.55); add(24,42,24,5,cfg.d,.45);
+  add(18,12,12,4,cfg.c,.90); add(14,18,10,4,cfg.c,.70); add(46,14,10,4,cfg.c,.62);
+  add(30,25,14,4,cfg.c,.95); add(30,36,14,4,cfg.c,.95);
+  add(34,29,6,7,cfg.c,.95);
+  return '<span class="rank-pixel-icon rank-pixel-'+key+'" aria-hidden="true"><svg viewBox="0 0 72 70" shape-rendering="crispEdges" focusable="false"><filter id="rankGlow_'+key+'"><feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="'+cfg.b+'" flood-opacity="0.58"/></filter><g filter="url(#rankGlow_'+key+')">'+px.join('')+'</g><text x="36" y="37" text-anchor="middle" font-size="15" font-family="monospace" font-weight="900" fill="'+cfg.c+'">'+cfg.name+'</text></svg></span>';
 }
 function arenaLeagueBadge(rp){ const key=arenaLeagueKey(rp); return '<span class="ranked-league-badge ranked-league-'+key+'">'+arenaRankPixelArt(key)+'<strong>'+arenaLeague(rp)+'</strong></span>'; }
 
@@ -5387,7 +5407,7 @@ function renderArenaCard(){
     ? txt('Tentativa de hoje registrada. Você ainda pode treinar sem mexer na pontuação.','Today\'s attempt is saved. You can still train without changing the score.')
     : txt('O Byte separou um desafio prático para hoje. Resolva dentro do tempo e tente superar seu próprio recorde.','Byte prepared a practical challenge for today. Solve it in time and try to beat your own record.');
   card.classList.add('ranked-card');
-  card.innerHTML='<button type="button" class="arena-entry-close" id="dismissArenaEntryBtn" aria-label="'+txt('Fechar Arena Ranked','Close Ranked Arena')+'">×</button><div class="arena-entry-inner"><div class="arena-ranked-token ranked-video-token"><video class="arena-ranked-video" src="'+RANKED_VIDEO_SRC+'" autoplay muted loop playsinline preload="auto" aria-label="Ranked"></video></div><div class="arena-entry-copy"><div class="arena-ranked-stamp"><b>R</b> '+txt('ranked diário local','local daily ranked')+'</div><h3 class="ranked-title"><span>Ranked</span> · '+txt('desafio diário aberto','daily challenge open')+'</h3><p class="ranked-subtitle">'+status+' '+txt('Pontue, ganhe RP e tente subir de liga no seu ranking pessoal.','Score points, earn RP, and try to climb your personal league.')+'</p><div class="arena-entry-metrics ranked-metrics"><div class="arena-metric ranked-metric"><span>'+txt('desafio','challenge')+'</span><strong>'+arenaEscape(arenaChallengeTitle(challenge))+'</strong></div><div class="arena-metric ranked-metric"><span>'+txt('liga ranked','ranked league')+'</span>'+arenaLeagueBadge(data.rp||0)+'</div><div class="arena-metric ranked-metric"><span>RP</span><strong>'+(data.rp||0)+'</strong></div><div class="arena-metric ranked-metric"><span>'+txt('melhor','best')+'</span><strong>'+best+' pts</strong></div></div></div><div class="arena-entry-actions"><button type="button" class="arena-main-btn" id="openArenaBtn">'+(attempt?txt('Ver Ranked','View Ranked'):txt('Entrar no Ranked','Enter Ranked'))+'</button><button type="button" class="arena-ghost-btn" id="openArenaHistoryBtn">'+txt('Histórico ranked','Ranked history')+'</button></div></div>';
+  card.innerHTML='<button type="button" class="arena-entry-close" id="dismissArenaEntryBtn" aria-label="'+txt('Fechar Arena Ranked','Close Ranked Arena')+'">×</button><div class="arena-entry-inner"><div class="arena-ranked-token ranked-video-token"><video class="arena-ranked-video" src="'+RANKED_VIDEO_SRC+'" autoplay muted loop playsinline preload="auto" aria-label="Ranked"></video></div><div class="arena-entry-copy"><div class="arena-ranked-stamp"><b>R</b> '+txt('ranked diário local','local daily ranked')+'</div><h3 class="ranked-title"><span>Ranked</span> · '+txt('desafio diário aberto','daily challenge open')+'</h3><p class="ranked-subtitle">'+status+' '+txt('Pontue, ganhe RP e tente subir de liga no seu ranking pessoal.','Score points, earn RP, and try to climb your personal league.')+'</p><div class="arena-entry-metrics ranked-metrics"><div class="arena-metric ranked-metric"><span>'+txt('desafio','challenge')+'</span><strong>'+arenaEscape(arenaChallengeTitle(challenge))+'</strong></div><div class="arena-metric ranked-metric ranked-league-metric"><span>'+txt('liga ranked','ranked league')+'</span>'+arenaLeagueBadge(data.rp||0)+'</div><div class="arena-metric ranked-metric"><span>RP</span><strong>'+(data.rp||0)+'</strong></div><div class="arena-metric ranked-metric"><span>'+txt('melhor','best')+'</span><strong>'+best+' pts</strong></div></div></div><div class="arena-entry-actions"><button type="button" class="arena-main-btn" id="openArenaBtn">'+(attempt?txt('Ver Ranked','View Ranked'):txt('Entrar no Ranked','Enter Ranked'))+'</button><button type="button" class="arena-ghost-btn" id="openArenaHistoryBtn">'+txt('Histórico ranked','Ranked history')+'</button></div></div>';
   const openBtn=document.getElementById('openArenaBtn'); if(openBtn)openBtn.addEventListener('click',showArenaIntro);
   const historyBtn=document.getElementById('openArenaHistoryBtn'); if(historyBtn)historyBtn.addEventListener('click',showArenaHistory);
   const closeBtn=document.getElementById('dismissArenaEntryBtn'); if(closeBtn)closeBtn.addEventListener('click',(event)=>{event.preventDefault();event.stopPropagation();localStorage.setItem(hiddenKey,today);card.classList.add('is-hidden');setTimeout(()=>card.remove(),140);});

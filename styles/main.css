@@ -8871,3 +8871,304 @@ html.daily-byte-open body{
 .path-row.unlocked:not(.selected):not(.current) .path-node{
   filter:saturate(1.08) brightness(1.04);
 }
+
+/* v62 — premium Ranked league card + integrated student profile */
+.arena-entry-metrics.ranked-metrics{
+  align-items:stretch;
+}
+.arena-metric.ranked-metric{
+  min-height:104px;
+  border-radius:18px;
+  padding:14px 16px;
+  position:relative;
+  overflow:hidden;
+}
+.arena-metric.ranked-metric::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 0 35%,rgba(255,255,255,.045) 46%,transparent 58% 100%);
+  transform:translateX(-90%);
+  opacity:.9;
+  pointer-events:none;
+}
+.arena-entry-card.ranked-card:hover .arena-metric.ranked-metric::before{
+  animation:rankedMetricSweep 1.3s ease both;
+}
+@keyframes rankedMetricSweep{to{transform:translateX(90%);}}
+.ranked-league-metric{
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  min-height:124px !important;
+  padding:14px 12px 12px !important;
+  border-color:rgba(114,214,255,.28) !important;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(114,214,255,.22),transparent 38%),
+    radial-gradient(circle at 50% 100%,rgba(199,146,234,.16),transparent 45%),
+    linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.028)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 0 1px rgba(45,245,197,.05),
+    0 18px 44px rgba(0,0,0,.18),
+    0 0 34px rgba(114,214,255,.08) !important;
+}
+.ranked-league-metric > span:first-child{
+  width:100%;
+  text-align:center;
+  margin-bottom:8px;
+  color:#8EE7FF !important;
+}
+.ranked-league-metric .ranked-league-badge{
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  min-height:88px;
+  width:min(154px,100%);
+  padding:7px 10px 10px;
+  border-radius:28px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.13),transparent 33%),
+    linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.035));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 0 0 1px rgba(255,255,255,.04),
+    0 16px 30px rgba(0,0,0,.22);
+}
+.ranked-league-metric .rank-pixel-icon{
+  width:78px;
+  height:74px;
+  margin-top:-2px;
+  filter:drop-shadow(0 16px 18px rgba(0,0,0,.38)) drop-shadow(0 0 20px currentColor);
+}
+.ranked-league-metric .rank-pixel-icon svg{
+  width:78px;
+  height:74px;
+}
+.ranked-league-metric .ranked-league-badge strong{
+  font-family:var(--font-mono);
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.ranked-league-metric .ranked-league-diamond{
+  color:#72D6FF;
+  background:
+    radial-gradient(circle at 50% 5%,rgba(243,252,255,.18),transparent 34%),
+    linear-gradient(180deg,rgba(81,201,255,.12),rgba(143,91,255,.08));
+}
+.ranked-league-metric .ranked-league-platinum{color:#7DFFF2;}
+.ranked-league-metric .ranked-league-gold{color:#FFD86A;}
+.ranked-league-metric .ranked-league-silver{color:#E8F0FA;}
+.ranked-league-metric .ranked-league-bronze{color:#F2A86F;}
+
+/* The old mini profile becomes redundant because level + achievements now work as one profile card. */
+.profile-side-card{display:none !important;}
+.badges-side-card.priority-side-card{
+  padding:0 !important;
+  overflow:hidden;
+  border-color:rgba(45,245,197,.26) !important;
+  background:
+    radial-gradient(circle at 12% 0%,rgba(45,245,197,.24),transparent 34%),
+    radial-gradient(circle at 100% 35%,rgba(91,155,255,.16),transparent 38%),
+    linear-gradient(180deg,rgba(16,27,39,.98),rgba(8,14,22,.98)) !important;
+  box-shadow:0 22px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.07) !important;
+}
+.badges-side-card.priority-side-card > .side-label-clean{
+  display:none !important;
+}
+.badge-list{padding:0 !important;}
+.student-profile-panel{
+  padding:16px;
+  display:grid;
+  gap:14px;
+}
+.student-profile-hero{
+  display:grid;
+  grid-template-columns:76px minmax(0,1fr);
+  align-items:center;
+  gap:13px;
+  padding:12px;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 0% 20%,rgba(45,245,197,.18),transparent 42%),
+    linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.student-avatar-orb{
+  width:76px;
+  height:76px;
+  position:relative;
+  display:grid;
+  place-items:center;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(255,255,255,.16),transparent 28%),
+    linear-gradient(135deg,rgba(45,245,197,.18),rgba(91,155,255,.12));
+  border:1px solid rgba(45,245,197,.24);
+  box-shadow:0 0 28px rgba(45,245,197,.14), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.student-avatar-orb img{
+  width:58px;
+  height:58px;
+  object-fit:contain;
+  filter:drop-shadow(0 10px 16px rgba(0,0,0,.38));
+}
+.student-avatar-orb span{
+  position:absolute;
+  right:-8px;
+  bottom:-7px;
+  min-width:44px;
+  padding:5px 8px;
+  border-radius:999px;
+  color:#061611;
+  background:linear-gradient(135deg,#2DF5C5,#8EE7FF);
+  border:1px solid rgba(255,255,255,.34);
+  font:950 11px/1 var(--font-mono);
+  box-shadow:0 8px 18px rgba(0,0,0,.28), 0 0 18px rgba(45,245,197,.25);
+}
+.student-profile-copy{min-width:0;}
+.student-profile-kicker{
+  color:var(--mint);
+  font:900 10px/1 var(--font-mono);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:7px;
+}
+.student-profile-copy strong{
+  display:block;
+  color:var(--text);
+  font:950 28px/1 var(--font-display);
+  letter-spacing:-.04em;
+}
+.student-profile-copy p{
+  margin:6px 0 0;
+  color:var(--text-dim);
+  font-size:12px;
+  line-height:1.35;
+}
+.student-level-console{
+  padding:14px;
+  border-radius:20px;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 7px),
+    linear-gradient(180deg,rgba(5,10,16,.82),rgba(9,15,23,.90));
+  border:1px solid rgba(45,245,197,.16);
+}
+.student-level-row,.student-level-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.student-level-row span{
+  color:#7DF9CC;
+  font:900 10px/1 var(--font-mono);
+  letter-spacing:.14em;
+}
+.student-level-row strong{
+  color:var(--text);
+  font:900 12px/1 var(--font-mono);
+}
+.premium-level-bar{
+  height:12px !important;
+  margin:10px 0 8px;
+  background:rgba(255,255,255,.06) !important;
+  border-color:rgba(255,255,255,.10) !important;
+  box-shadow:inset 0 2px 7px rgba(0,0,0,.35);
+}
+.premium-level-bar i{
+  background:linear-gradient(90deg,#18D99A 0%,#2DF5C5 42%,#5B9BFF 76%,#C792EA 100%) !important;
+  box-shadow:0 0 18px rgba(45,245,197,.38),0 0 30px rgba(91,155,255,.20) !important;
+}
+.student-level-meta span{
+  color:var(--text-dim);
+  font:800 9px/1 var(--font-mono);
+  letter-spacing:.03em;
+}
+.student-profile-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.student-profile-stats div{
+  padding:10px 8px;
+  border-radius:15px;
+  text-align:center;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.075);
+}
+.student-profile-stats strong{
+  display:block;
+  color:var(--text);
+  font:950 17px/1 var(--font-display);
+}
+.student-profile-stats span{
+  display:block;
+  margin-top:5px;
+  color:var(--text-dim);
+  font:800 9px/1 var(--font-mono);
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.premium-achievement-row{
+  padding-top:2px;
+}
+.premium-equipped-grid{
+  gap:9px !important;
+}
+.premium-equipped-grid .equipped-achievement-slot{
+  width:52px;
+  height:52px;
+  border-radius:17px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.13),transparent 36%),
+    rgba(255,255,255,.045);
+  border-color:rgba(45,245,197,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 10px 20px rgba(0,0,0,.20);
+}
+.premium-equipped-grid .achievement-pixel-icon img{
+  max-width:42px;
+  max-height:42px;
+}
+.premium-manage-btn{
+  margin-top:0 !important;
+  border-radius:17px !important;
+  min-height:46px;
+  background:linear-gradient(135deg,rgba(45,245,197,.18),rgba(91,155,255,.10)) !important;
+  border-color:rgba(45,245,197,.28) !important;
+  box-shadow:0 14px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* cleaner, premium path rail */
+.knowledge-path.enhanced-path::before{
+  width:10px !important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.20),transparent 26%,transparent 74%,rgba(255,255,255,.16)),
+    linear-gradient(180deg,#14F0AA 0%,#22D0B6 32%,#2D84B9 62%,#8F5BFF 100%) !important;
+  background-size:100% 100%,100% 100% !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.08),
+    0 0 20px rgba(45,245,197,.34),
+    0 0 54px rgba(91,155,255,.20),
+    inset 0 0 8px rgba(255,255,255,.16) !important;
+}
+.knowledge-path.enhanced-path::after{
+  width:18px !important;
+  height:18px !important;
+  background:radial-gradient(circle,#fff 0 19%,#9FFFE4 20% 45%,rgba(45,245,197,.26) 46% 72%,transparent 73%) !important;
+}
+.path-runner::before,.path-runner::after{
+  width:10px !important;
+  height:10px !important;
+}
+@media(max-width:900px){
+  .ranked-league-metric .ranked-league-badge{width:100%;}
+  .student-profile-stats{grid-template-columns:1fr 1fr 1fr;}
+}
