@@ -71,7 +71,7 @@ function getLevelLabel(level){ const pair = LEVEL_LABEL[level] || [level, level]
 
 /* ---------- state ---------- */
 function loadState(){
-  const defaults = { completed: {}, xp: 0, streak: 0, lastCompletionDate: null, taskScores: {}, attempts: {}, todayCompletions: {}, expandedTaskId: null, selectedModule: null, reviewDue: {}, weakTopics: {}, badges: {}, theme: 'dark', energy: 100, adminUnlocked: false, language: 'pt', studentName: 'Aluno', selectedPathTaskId: null, lastDailyByteReviewAt: 0, equippedAchievements: [], achievementToastNotified: [] };
+  const defaults = { completed: {}, xp: 0, streak: 0, lastCompletionDate: null, taskScores: {}, attempts: {}, todayCompletions: {}, expandedTaskId: null, selectedModule: null, reviewDue: {}, weakTopics: {}, badges: {}, theme: 'dark', energy: 100, adminUnlocked: false, language: 'pt', studentName: '', selectedPathTaskId: null, lastDailyByteReviewAt: 0, equippedAchievements: [], achievementToastNotified: [] };
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return Object.assign(defaults, JSON.parse(raw));
@@ -122,10 +122,10 @@ function getStudentName(){
   return normalizeStudentName(state.studentName) || txt('Aluno', 'Student');
 }
 function setStudentName(value){
-  state.studentName = normalizeStudentName(value) || txt('Aluno', 'Student');
+  state.studentName = normalizeStudentName(value);
   saveState();
   renderProfileWidgets();
-  if(typeof renderWorldRankingCard === 'function') renderWorldRankingCard();
+  try{ if(typeof renderWorldRankingCard === 'function') renderWorldRankingCard(); }catch(error){}
 }
 function syncLanguageData(){
   tasks = getLang() === 'en' ? TASKS_EN : TASKS_PT;
@@ -1694,10 +1694,10 @@ function renderProfileWidgets(){
           '<div class="student-avatar-orb"><img src="' + BYTE_IMAGE_SRC + '" alt="Byte"><span>Lv ' + levelInfo.level + '</span></div>' +
           '<div class="student-profile-copy"><div class="student-profile-kicker">' + txt('perfil do aluno', 'student profile') + '</div><div class="student-profile-name" id="studentProfileName">' + escapeHtml(studentName) + '</div><strong>' + txt('Level ', 'Level ') + levelInfo.level + '</strong><p>' + nextText + '</p></div>' +
         '</div>' +
-        '<div class="student-name-editor">' +
+        '<form class="student-name-editor" id="studentNameForm">' +
           '<label for="studentNicknameInput">' + txt('nome ou nickname', 'name or nickname') + '</label>' +
-          '<div class="student-name-row"><input id="studentNicknameInput" type="text" maxlength="24" autocomplete="off" value="' + escapeHtml(studentName) + '" placeholder="' + txt('Seu nome no MyCode', 'Your MyCode name') + '"><button type="button" id="saveStudentNicknameBtn">' + txt('Salvar', 'Save') + '</button></div>' +
-        '</div>' +
+          '<div class="student-name-row"><input id="studentNicknameInput" name="studentNicknameInput" type="text" maxlength="24" autocomplete="off" value="' + escapeHtml(studentName) + '" placeholder="' + escapeHtml(txt('Seu nome no MyCode', 'Your MyCode name')) + '"><button type="submit" id="saveStudentNicknameBtn">' + txt('Salvar', 'Save') + '</button></div>' +
+        '</form>' +
         '<div class="student-level-console">' +
           '<div class="student-level-row"><span>XP</span><strong>' + levelInfo.current + '/' + levelInfo.needed + '</strong></div>' +
           '<div class="level-side-bar premium-level-bar"><i style="width:' + levelInfo.pct + '%"></i></div>' +
@@ -1713,16 +1713,12 @@ function renderProfileWidgets(){
         '<button type="button" class="achievement-manage-btn premium-manage-btn" id="openAchievementsBtn">' + txt('Gerenciar perfil e conquistas', 'Manage profile achievements') + ' · ' + unlockedCount + '/' + ACHIEVEMENT_DEFS.length + '</button>' +
       '</div>';
     badgeList.querySelectorAll('[data-achievement-open]').forEach(btn => btn.addEventListener('click', showAchievementsModal));
-    const nameInput = document.getElementById('studentNicknameInput');
-    const saveNameBtn = document.getElementById('saveStudentNicknameBtn');
-    const saveName = () => setStudentName(nameInput ? nameInput.value : '');
-    if(saveNameBtn) saveNameBtn.addEventListener('click', saveName);
-    if(nameInput){
-      nameInput.addEventListener('keydown', event => {
-        if(event.key === 'Enter'){
-          event.preventDefault();
-          saveName();
-        }
+    const studentNameForm = document.getElementById('studentNameForm');
+    const studentNameInput = document.getElementById('studentNicknameInput');
+    if(studentNameForm){
+      studentNameForm.addEventListener('submit', event => {
+        event.preventDefault();
+        setStudentName(studentNameInput ? studentNameInput.value : '');
       });
     }
     const manageBtn = document.getElementById('openAchievementsBtn');
@@ -1937,8 +1933,8 @@ function renderPanelWidgets(){
   renderProfileWidgets();
   renderAdaptiveCard();
   if(typeof renderArenaCard === 'function') renderArenaCard();
-  if(typeof renderWorldRankingCard === 'function') renderWorldRankingCard();
-  if(typeof updateTopbarVisibility === 'function') updateTopbarVisibility();
+  try{ if(typeof renderWorldRankingCard === 'function') renderWorldRankingCard(); }catch(error){}
+  try{ if(typeof updateTopbarVisibility === 'function') updateTopbarVisibility(); }catch(error){}
   applyTheme();
   updatePanelLanguage();
 }
@@ -5751,7 +5747,7 @@ function __mycodeStudentName(){
     const raw = localStorage.getItem('codetrilha_progress_v3');
     if(raw){
       const parsed = JSON.parse(raw);
-      const clean = String(parsed.studentName || '').replace(/\s+/g, ' ').trim().slice(0, 24);
+      const clean = String(parsed && parsed.studentName || '').replace(/\s+/g, ' ').trim().slice(0, 24);
       if(clean) return clean;
     }
   }catch(error){}
