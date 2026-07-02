@@ -1,9 +1,13 @@
 # MyCode
 
-> Upload note: this distribution keeps the project below 100 files for GitHub's web uploader by consolidating CSS partials into `styles/main.css`.
+<img width="1846" height="940" alt="image" src="https://github.com/user-attachments/assets/f11721d2-f1d6-4c67-8f16-9bf43e327b64" />
+
 
 
 MyCode is a gamified programming learning platform for absolute beginners. It combines a progressive curriculum, interactive code questions, professional code editors, local Ranked mode, achievements, certificates, and bilingual content in Portuguese and English.
+
+
+
 
 ## Highlights
 
@@ -16,6 +20,11 @@ MyCode is a gamified programming learning platform for absolute beginners. It co
 - Certificate area with PDF generation.
 - Progress persisted locally through `localStorage`.
 - No backend requirement: the project runs as a static frontend.
+
+
+
+<img width="1861" height="946" alt="image" src="https://github.com/user-attachments/assets/a43eb2de-9dd6-4cfa-aabe-d676bcf3bd8a" />
+
 
 ## Tech Stack
 
