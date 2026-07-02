@@ -1,5 +1,7 @@
 # MyCode
 
+<img width="1856" height="949" alt="image" src="https://github.com/user-attachments/assets/e2c5791d-246d-4f9a-8193-9e0301fd5388" />
+
 MyCode is an interactive programming-learning platform designed for absolute beginners. It combines a guided curriculum, a visual learning path, code-based exercises, project tasks, achievements, local Ranked challenges, certificates, and a companion mascot called Byte.
 
 The project is currently a **front-end-only application**. It does not require a backend, authentication, database, or external API to run. Progress, equipped achievements, Ranked history, local RP, streaks, and daily state are stored in the browser through `localStorage`.
@@ -61,6 +63,9 @@ The old textarea-like terminals were replaced with Ranked-style code editors acr
 - Auto indentation after opening braces.
 
 ### Local Ranked Arena
+
+<img width="1831" height="938" alt="image" src="https://github.com/user-attachments/assets/171bd324-fc27-458f-9c26-dde981894f05" />
+
 
 MyCode includes a local/offline Ranked mode. The Ranked feature is intentionally **not a global competitive system yet**, because this version has no backend or user accounts.
 
