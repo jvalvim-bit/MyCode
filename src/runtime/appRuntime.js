@@ -71,7 +71,7 @@ function getLevelLabel(level){ const pair = LEVEL_LABEL[level] || [level, level]
 
 /* ---------- state ---------- */
 function loadState(){
-  const defaults = { completed: {}, xp: 0, streak: 0, lastCompletionDate: null, taskScores: {}, attempts: {}, todayCompletions: {}, expandedTaskId: null, selectedModule: null, reviewDue: {}, weakTopics: {}, badges: {}, theme: 'dark', energy: 100, adminUnlocked: false, language: 'pt', selectedPathTaskId: null, lastDailyByteReviewAt: 0, equippedAchievements: [], achievementToastNotified: [], studentName: '' };
+  const defaults = { completed: {}, xp: 0, streak: 0, lastCompletionDate: null, taskScores: {}, attempts: {}, todayCompletions: {}, expandedTaskId: null, selectedModule: null, reviewDue: {}, weakTopics: {}, badges: {}, theme: 'dark', energy: 100, adminUnlocked: false, language: 'pt', studentName: 'Aluno', selectedPathTaskId: null, lastDailyByteReviewAt: 0, equippedAchievements: [], achievementToastNotified: [] };
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return Object.assign(defaults, JSON.parse(raw));
@@ -115,37 +115,17 @@ function ensureAdminMaxProgress(){
 
 function getLang(){ return state.language === 'en' ? 'en' : 'pt'; }
 function txt(pt, en){ return getLang() === 'en' ? en : pt; }
-function sanitizeStudentName(value){
-  return String(value || '')
-    .replace(/[<>]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 24);
+function normalizeStudentName(value){
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, 24);
 }
-function getStudentDisplayName(){
-  const saved = sanitizeStudentName(state.studentName);
-  if(saved !== state.studentName){
-    state.studentName = saved;
-    saveState();
-  }
-  return saved || txt('Aluno MyCode', 'MyCode Student');
+function getStudentName(){
+  return normalizeStudentName(state.studentName) || txt('Aluno', 'Student');
 }
-function showSimpleToast(message){
-  const el = document.getElementById('toast');
-  if(!el) return;
-  el.textContent = message;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2600);
-}
-function promptStudentName(){
-  const current = sanitizeStudentName(state.studentName);
-  const answer = window.prompt(txt('Digite seu nome ou nickname:', 'Enter your name or nickname:'), current);
-  if(answer === null) return;
-  state.studentName = sanitizeStudentName(answer);
+function setStudentName(value){
+  state.studentName = normalizeStudentName(value) || txt('Aluno', 'Student');
   saveState();
   renderProfileWidgets();
   if(typeof renderWorldRankingCard === 'function') renderWorldRankingCard();
-  showSimpleToast(state.studentName ? txt('Nome do aluno atualizado.', 'Student name updated.') : txt('Nome removido. Usando padrão.', 'Name removed. Using default.'));
 }
 function syncLanguageData(){
   tasks = getLang() === 'en' ? TASKS_EN : TASKS_PT;
@@ -1707,12 +1687,16 @@ function renderProfileWidgets(){
     const nextText = levelInfo.level >= MAX_USER_LEVEL
       ? txt('nível máximo alcançado', 'max level reached')
       : txt(levelInfo.remaining + ' XP para o próximo level', levelInfo.remaining + ' XP to next level');
-    const studentName = getStudentDisplayName();
+    const studentName = getStudentName();
     badgeList.innerHTML =
       '<div class="student-profile-panel">' +
         '<div class="student-profile-hero">' +
           '<div class="student-avatar-orb"><img src="' + BYTE_IMAGE_SRC + '" alt="Byte"><span>Lv ' + levelInfo.level + '</span></div>' +
-          '<div class="student-profile-copy"><div class="student-profile-kicker">' + txt('perfil do aluno', 'student profile') + '</div><button type="button" class="student-name-pill" id="editStudentNameBtn" aria-label="' + txt('Editar nome ou nickname do aluno', 'Edit student name or nickname') + '"><span>' + escapeHtml(studentName) + '</span><small>' + txt('editar nick', 'edit nick') + '</small></button><strong>' + txt('Level ', 'Level ') + levelInfo.level + '</strong><p>' + nextText + '</p></div>' +
+          '<div class="student-profile-copy"><div class="student-profile-kicker">' + txt('perfil do aluno', 'student profile') + '</div><div class="student-profile-name" id="studentProfileName">' + escapeHtml(studentName) + '</div><strong>' + txt('Level ', 'Level ') + levelInfo.level + '</strong><p>' + nextText + '</p></div>' +
+        '</div>' +
+        '<div class="student-name-editor">' +
+          '<label for="studentNicknameInput">' + txt('nome ou nickname', 'name or nickname') + '</label>' +
+          '<div class="student-name-row"><input id="studentNicknameInput" type="text" maxlength="24" autocomplete="off" value="' + escapeHtml(studentName) + '" placeholder="' + txt('Seu nome no MyCode', 'Your MyCode name') + '"><button type="button" id="saveStudentNicknameBtn">' + txt('Salvar', 'Save') + '</button></div>' +
         '</div>' +
         '<div class="student-level-console">' +
           '<div class="student-level-row"><span>XP</span><strong>' + levelInfo.current + '/' + levelInfo.needed + '</strong></div>' +
@@ -1729,10 +1713,20 @@ function renderProfileWidgets(){
         '<button type="button" class="achievement-manage-btn premium-manage-btn" id="openAchievementsBtn">' + txt('Gerenciar perfil e conquistas', 'Manage profile achievements') + ' · ' + unlockedCount + '/' + ACHIEVEMENT_DEFS.length + '</button>' +
       '</div>';
     badgeList.querySelectorAll('[data-achievement-open]').forEach(btn => btn.addEventListener('click', showAchievementsModal));
+    const nameInput = document.getElementById('studentNicknameInput');
+    const saveNameBtn = document.getElementById('saveStudentNicknameBtn');
+    const saveName = () => setStudentName(nameInput ? nameInput.value : '');
+    if(saveNameBtn) saveNameBtn.addEventListener('click', saveName);
+    if(nameInput){
+      nameInput.addEventListener('keydown', event => {
+        if(event.key === 'Enter'){
+          event.preventDefault();
+          saveName();
+        }
+      });
+    }
     const manageBtn = document.getElementById('openAchievementsBtn');
     if(manageBtn) manageBtn.addEventListener('click', showAchievementsModal);
-    const editNameBtn = document.getElementById('editStudentNameBtn');
-    if(editNameBtn) editNameBtn.addEventListener('click', promptStudentName);
   }
 }
 function ensureAchievementsModal(){
@@ -1868,7 +1862,7 @@ function getWorldRankingPlayersLocal(){
     {name:'DevLua', league:'Ouro', score:121, rp:1290},
     {name:'StackHero', league:'Prata', score:116, rp:980},
     {name:'BugHunter', league:'Prata', score:109, rp:840},
-    {name:__mycodeStudentName(), league:'Bronze', score:102, rp:620},
+    {name:getStudentName(), league:'Bronze', score:102, rp:620},
     {name:'CodeRafa', league:'Bronze', score:98, rp:510},
     {name:'MilaDOM', league:'Bronze', score:92, rp:470},
     {name:'FetchNinja', league:'Bronze', score:87, rp:420},
@@ -5708,7 +5702,7 @@ const WORLD_RANKING_PLAYERS = [
   {name:'DevLua', league:'Ouro', score:121, rp:1290},
   {name:'StackHero', league:'Prata', score:116, rp:980},
   {name:'BugHunter', league:'Prata', score:109, rp:840},
-  {name:__mycodeStudentName(), league:'Bronze', score:102, rp:620},
+  {name:'JoaoVictor', league:'Bronze', score:102, rp:620},
   {name:'CodeRafa', league:'Bronze', score:98, rp:510},
   {name:'MilaDOM', league:'Bronze', score:92, rp:470},
   {name:'FetchNinja', league:'Bronze', score:87, rp:420},
@@ -5752,22 +5746,19 @@ function __mycodePanelLang(){
   return 'pt';
 }
 function __mycodeTxt(pt,en){ return __mycodePanelLang()==='en' ? en : pt; }
-function __mycodeEsc(value){
-  return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-}
 function __mycodeStudentName(){
   try{
     const raw = localStorage.getItem('codetrilha_progress_v3');
-    const parsed = raw ? JSON.parse(raw) : null;
-    const name = String(parsed && parsed.studentName ? parsed.studentName : '')
-      .replace(/[<>]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 24);
-    return name || __mycodeTxt('Aluno MyCode', 'MyCode Student');
-  }catch(error){
-    return __mycodeTxt('Aluno MyCode', 'MyCode Student');
-  }
+    if(raw){
+      const parsed = JSON.parse(raw);
+      const clean = String(parsed.studentName || '').replace(/\s+/g, ' ').trim().slice(0, 24);
+      if(clean) return clean;
+    }
+  }catch(error){}
+  return __mycodeTxt('Aluno', 'Student');
+}
+function __mycodeEsc(value){
+  return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 function __mycodeWorldLeague(league){
   const map={Diamante:'Diamond',Platina:'Platinum',Ouro:'Gold',Prata:'Silver',Bronze:'Bronze'};
@@ -5784,10 +5775,10 @@ function worldRankingRows(limit){
     {name:'DevLua', league:'Ouro', score:121, rp:1290},
     {name:'StackHero', league:'Prata', score:116, rp:980},
     {name:'BugHunter', league:'Prata', score:109, rp:840},
-    {name:__mycodeStudentName(), league:'Bronze', score:102, rp:620}
+    {name:'JoaoVictor', league:'Bronze', score:102, rp:620}
   ];
   return players.slice(0, limit || players.length).map((item, idx) =>
-    '<div class="world-rank-row"><div class="world-rank-pos">#'+(idx+1)+'</div><div><div class="world-rank-name">'+__mycodeEsc(item.name)+'</div><span class="world-rank-meta">'+__mycodeEsc(__mycodeWorldLeague(item.league))+' · '+__mycodeEsc(item.rp)+' RP</span></div><div class="world-rank-score">'+__mycodeEsc(item.score)+' pts</div></div>'
+    '<div class="world-rank-row"><div class="world-rank-pos">#'+(idx+1)+'</div><div><div class="world-rank-name">'+__mycodeEsc(item.name === 'JoaoVictor' ? __mycodeStudentName() : item.name)+'</div><span class="world-rank-meta">'+__mycodeEsc(__mycodeWorldLeague(item.league))+' · '+__mycodeEsc(item.rp)+' RP</span></div><div class="world-rank-score">'+__mycodeEsc(item.score)+' pts</div></div>'
   ).join('');
 }
 function renderWorldRankingCard(){

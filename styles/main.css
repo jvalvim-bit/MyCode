@@ -9173,70 +9173,98 @@ html.daily-byte-open body{
   .student-profile-stats{grid-template-columns:1fr 1fr 1fr;}
 }
 
-
-/* v63 — ajustes do perfil do aluno, nickname e elo Ranked compacto */
-.student-name-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  max-width:100%;
-  margin:0 0 7px;
-  padding:6px 8px;
-  border-radius:999px;
-  border:1px solid rgba(45,245,197,.22);
-  background:rgba(45,245,197,.08);
-  color:var(--text);
-  cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-}
-.student-name-pill span{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font:900 12px/1 var(--font-mono);
-}
-.student-name-pill small{
-  flex:0 0 auto;
-  color:#7DF9CC;
-  font:900 8px/1 var(--font-mono);
-  letter-spacing:.09em;
-  text-transform:uppercase;
-  opacity:.9;
-}
-.student-name-pill:hover{
-  transform:translateY(-1px);
-  border-color:rgba(45,245,197,.36);
-  background:rgba(45,245,197,.13);
-}
+/* v63 — ajustes solicitados: Liga Ranked menor/centralizada e nickname do aluno */
 .ranked-league-metric{
   align-items:center !important;
   justify-content:center !important;
+  text-align:center !important;
   min-height:104px !important;
-  padding:12px !important;
+  padding:12px 10px !important;
 }
 .ranked-league-metric > span:first-child{
-  margin-bottom:6px !important;
+  display:block !important;
+  width:100% !important;
+  margin:0 0 6px !important;
+  text-align:center !important;
 }
 .ranked-league-metric .ranked-league-badge{
-  width:min(118px,100%) !important;
+  width:min(122px,100%) !important;
   min-height:70px !important;
   margin:0 auto !important;
   padding:6px 8px 8px !important;
   gap:4px !important;
   border-radius:22px !important;
 }
-.ranked-league-metric .rank-pixel-icon{
-  width:50px !important;
-  height:48px !important;
-  margin:0 auto !important;
-}
+.ranked-league-metric .rank-pixel-icon,
 .ranked-league-metric .rank-pixel-icon svg{
-  width:50px !important;
-  height:48px !important;
-  display:block !important;
+  width:54px !important;
+  height:52px !important;
+}
+.ranked-league-metric .rank-pixel-icon{
+  margin:0 auto !important;
+  filter:drop-shadow(0 10px 14px rgba(0,0,0,.36)) drop-shadow(0 0 14px currentColor) !important;
 }
 .ranked-league-metric .ranked-league-badge strong{
   font-size:11px !important;
-  letter-spacing:.10em !important;
+  line-height:1 !important;
+  letter-spacing:.11em !important;
+}
+.student-profile-name{
+  max-width:100%;
+  color:#DFF6FF;
+  font:900 14px/1.1 var(--font-mono);
+  letter-spacing:.02em;
+  margin:0 0 6px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.student-name-editor{
+  display:grid;
+  gap:7px;
+  padding:11px 12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+}
+.student-name-editor label{
+  color:var(--mint);
+  font:900 10px/1 var(--font-mono);
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.student-name-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  align-items:center;
+}
+.student-name-row input{
+  min-width:0;
+  height:38px;
+  border-radius:13px;
+  border:1px solid rgba(45,245,197,.18);
+  outline:none;
+  background:rgba(6,13,20,.78);
+  color:var(--text);
+  padding:0 11px;
+  font:800 12px/1 var(--font-mono);
+}
+.student-name-row input:focus{
+  border-color:rgba(45,245,197,.46);
+  box-shadow:0 0 0 3px rgba(45,245,197,.10);
+}
+.student-name-row button{
+  height:38px;
+  border:0;
+  border-radius:13px;
+  padding:0 12px;
+  color:#061611;
+  background:linear-gradient(135deg,#2DF5C5,#8EE7FF);
+  font:950 11px/1 var(--font-mono);
+  cursor:pointer;
+}
+@media(max-width:560px){
+  .student-name-row{grid-template-columns:1fr;}
+  .student-name-row button{width:100%;}
 }
