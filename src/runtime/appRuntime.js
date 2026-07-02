@@ -60,6 +60,12 @@ let tasks = TASKS_PT;
 (function(){
 
 const STORAGE_KEY = 'codetrilha_progress_v3';
+const XP_PER_LEVEL = 100;
+const TASK_XP_REWARD = 50;
+const PROJECT_XP_REWARD = 200;
+const MAX_USER_LEVEL = 100;
+const MAX_RANKED_RP = 2400;
+const LEVEL_MAX_XP = (MAX_USER_LEVEL - 1) * XP_PER_LEVEL;
 const LEVEL_LABEL = { basico: ['básico','basic'], intermediario: ['intermediário','intermediate'], avancado: ['avançado','advanced'] };
 function getLevelLabel(level){ const pair = LEVEL_LABEL[level] || [level, level]; return txt(pair[0], pair[1]); }
 
@@ -75,6 +81,37 @@ function loadState(){
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 let state = loadState();
 
+function getRawUserXp(){ return Math.max(0, Number(state.xp || 0)); }
+function getUserLevelFromXp(xp){
+  const normalized = Math.max(0, Math.min(LEVEL_MAX_XP, Number(xp) || 0));
+  return Math.min(MAX_USER_LEVEL, Math.max(1, Math.floor(normalized / XP_PER_LEVEL) + 1));
+}
+function getUserLevel(){ return state.adminUnlocked ? MAX_USER_LEVEL : getUserLevelFromXp(getRawUserXp()); }
+function getDisplayUserXp(){ return state.adminUnlocked ? Math.max(getRawUserXp(), LEVEL_MAX_XP) : getRawUserXp(); }
+function getUserLevelProgress(){
+  if(state.adminUnlocked){ return { level:MAX_USER_LEVEL, current:XP_PER_LEVEL, needed:XP_PER_LEVEL, pct:100, remaining:0 }; }
+  const raw = Math.min(getRawUserXp(), LEVEL_MAX_XP);
+  const level = getUserLevelFromXp(raw);
+  const current = level >= MAX_USER_LEVEL ? XP_PER_LEVEL : raw % XP_PER_LEVEL;
+  const pct = level >= MAX_USER_LEVEL ? 100 : Math.round((current / XP_PER_LEVEL) * 100);
+  return { level, current, needed:XP_PER_LEVEL, pct, remaining:Math.max(0, XP_PER_LEVEL - current) };
+}
+function addUserXp(amount){
+  const oldXp = getRawUserXp();
+  const nextXp = Math.max(0, Math.min(LEVEL_MAX_XP, oldXp + Math.max(0, Number(amount) || 0)));
+  state.xp = nextXp;
+  return { oldXp, newXp:nextXp, oldLevel:getUserLevelFromXp(oldXp), newLevel:getUserLevelFromXp(nextXp), gained:nextXp - oldXp };
+}
+function ensureAdminMaxProgress(){
+  if(!state.adminUnlocked) return;
+  state.xp = Math.max(getRawUserXp(), LEVEL_MAX_XP);
+  try{
+    const arena = loadArenaState();
+    arena.rp = Math.max(Number(arena.rp || 0), MAX_RANKED_RP);
+    arena.bestScore = Math.max(Number(arena.bestScore || 0), 150);
+    saveArenaState(arena);
+  }catch(err){}
+}
 
 function getLang(){ return state.language === 'en' ? 'en' : 'pt'; }
 function txt(pt, en){ return getLang() === 'en' ? en : pt; }
@@ -269,7 +306,7 @@ function updateSidebarLanguage(){
   const profileLabel = document.querySelector('.profile-side-card .side-label-clean');
   if(profileLabel) profileLabel.textContent = txt('perfil do aluno', 'student profile');
   const profileSpans = document.querySelectorAll('.profile-mini-grid span');
-  if(profileSpans[0]) profileSpans[0].textContent = 'XP';
+  if(profileSpans[0]) profileSpans[0].textContent = txt('nível', 'level');
   if(profileSpans[1]) profileSpans[1].textContent = txt('tarefas', 'tasks');
   if(profileSpans[2]) profileSpans[2].textContent = txt('dominadas', 'mastered');
   if(profileSpans[3]) profileSpans[3].textContent = txt('revisões', 'reviews');
@@ -696,11 +733,14 @@ if(profileBtnTop) profileBtnTop.addEventListener('click', () => {
 const adminUnlockBtnTop = document.getElementById('adminUnlockBtnTop');
 if(adminUnlockBtnTop) adminUnlockBtnTop.addEventListener('click', () => {
   state.adminUnlocked = true;
+  ensureAdminMaxProgress();
   saveState();
   adminUnlockBtnTop.textContent = 'Admin ✓';
+  renderTopStats();
   renderProfileWidgets();
   renderAchievementsModal();
   goToPanel();
+  renderArenaCard();
   renderTaskGrid();
 });
 
@@ -925,8 +965,13 @@ function bumpStat(el){
 }
 
 function renderTopStats(){
-  document.getElementById('streakCount').textContent = state.streak;
-  document.getElementById('xpCount').textContent = state.xp;
+  const streakEl = document.getElementById('streakCount');
+  if(streakEl) streakEl.textContent = state.streak;
+  const levelInfo = getUserLevelProgress();
+  const xpCount = document.getElementById('xpCount');
+  if(xpCount) xpCount.textContent = 'Lv. ' + levelInfo.level;
+  const xpDetail = document.getElementById('xpDetail');
+  if(xpDetail) xpDetail.textContent = levelInfo.current + '/' + levelInfo.needed + ' XP';
   const totalDone = Object.keys(state.completed).filter(k => tasks.some(t => String(t.id) === String(k))).length;
   const progressChip = document.getElementById('progressChip');
   if(progressChip) progressChip.textContent = totalDone + '/' + tasks.length;
@@ -1452,13 +1497,13 @@ function notifyNewAchievementUnlocks(beforeIds){
 function showProgressMilestoneToast(kind, title, message, iconHtml, index){
   const stack = ensureAchievementToastStack();
   const toast = document.createElement('div');
-  toast.className = 'achievement-steam-toast progress-steam-toast ' + (kind === 'rank' ? 'rank-up' : 'module-complete');
+  toast.className = 'achievement-steam-toast progress-steam-toast ' + (kind === 'rank' ? 'rank-up' : (kind === 'level' ? 'level-up' : 'module-complete'));
   const offset = Number(index || 0) * 0.22;
   toast.style.animationDelay = offset + 's, ' + (5.4 + offset) + 's';
   toast.innerHTML =
     '<div class="achievement-toast-icon">' + (iconHtml || '<div class="milestone-icon">✓</div>') + '</div>' +
     '<div class="achievement-toast-copy">' +
-      '<div class="achievement-toast-kicker">' + (kind === 'rank' ? txt('ranked atualizado', 'rank updated') : txt('módulo concluído', 'module completed')) + '</div>' +
+      '<div class="achievement-toast-kicker">' + (kind === 'rank' ? txt('ranked atualizado', 'rank updated') : (kind === 'level' ? txt('level up', 'level up') : txt('módulo concluído', 'module completed'))) + '</div>' +
       '<div class="achievement-toast-title">' + escapeHtml(title) + '</div>' +
       '<div class="achievement-toast-req">' + escapeHtml(message) + '</div>' +
     '</div>' +
@@ -1506,6 +1551,25 @@ function notifyRankUp(oldRp, newRp){
     arenaLeague(newRp),
     txt('Você subiu de liga no Ranked local.', 'You ranked up in local Ranked.'),
     arenaRankPixelArt(newKey),
+    0
+  );
+}
+function levelToastIcon(level){
+  return '<div class="level-up-icon"><span>LV</span><strong>' + escapeHtml(String(level)) + '</strong></div>';
+}
+function notifyLevelUps(oldXp, newXp){
+  if(state.adminUnlocked) return;
+  const oldLevel = getUserLevelFromXp(oldXp);
+  const newLevel = getUserLevelFromXp(newXp);
+  if(newLevel <= oldLevel) return;
+  const gained = newLevel - oldLevel;
+  showProgressMilestoneToast(
+    'level',
+    txt('Nível ', 'Level ') + newLevel,
+    gained > 1
+      ? txt('Você evoluiu ' + gained + ' níveis com esta conclusão.', 'You advanced ' + gained + ' levels with this completion.')
+      : txt('Você subiu de nível. Cada 100 XP aumenta seu level.', 'You leveled up. Every 100 XP increases your level.'),
+    levelToastIcon(newLevel),
     0
   );
 }
@@ -1599,15 +1663,17 @@ function renderProfileWidgets(){
   const done = document.getElementById('profileDone');
   const dom = document.getElementById('profileDominated');
   const weak = document.getElementById('profileWeak');
-  if(xp) xp.textContent = state.xp || 0;
+  if(xp) xp.textContent = getUserLevel();
   if(done) done.textContent = completedCount + '/' + tasks.length;
   if(dom) dom.textContent = dominated;
   if(weak) weak.textContent = review;
   const badgeList = document.getElementById('badgeList');
   if(badgeList){
+    const levelInfo = getUserLevelProgress();
     const unlockedCount = ACHIEVEMENT_DEFS.filter(isAchievementUnlocked).length;
     const equipped = normalizeEquippedAchievements();
     badgeList.innerHTML =
+      '<div class="level-side-summary"><div><span>' + txt('nível do aluno', 'student level') + '</span><strong>Lv. ' + levelInfo.level + '</strong></div><div class="level-side-bar"><i style="width:' + levelInfo.pct + '%"></i></div><small>' + levelInfo.current + '/' + levelInfo.needed + ' XP</small></div>' +
       '<div class="achievement-summary-row"><div><strong>' + txt('Conquistas equipadas', 'Equipped achievements') + '</strong><small>' + txt('Escolha até 5 para aparecerem no painel.', 'Choose up to 5 to show on your dashboard.') + '</small></div><span class="achievement-count-pill">' + equipped.length + '/' + ACHIEVEMENT_EQUIP_LIMIT + '</span></div>' +
       '<div class="equipped-achievement-grid">' + renderEquippedSlots() + '</div>' +
       '<button type="button" class="achievement-manage-btn" id="openAchievementsBtn">' + txt('Gerenciar conquistas', 'Manage achievements') + ' · ' + unlockedCount + '/' + ACHIEVEMENT_DEFS.length + '</button>';
@@ -2281,7 +2347,7 @@ function renderExerciseShell(step, innerHtml){
   const conceptHtml = getCodeConceptHtml(step);
   return '<div class="exercise-shell">' +
     '<div class="exercise-window">' +
-      '<div class="exercise-xp-float"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.4 5.7 21l2.3-7.2L2 9.2h7.6z"/></svg>+' + activeTask.xp + ' xp</div>' +
+      '<div class="exercise-xp-float"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.4 5.7 21l2.3-7.2L2 9.2h7.6z"/></svg>+' + TASK_XP_REWARD + ' xp</div>' +
       '<div class="exercise-topbar"><span class="demo-dot d-coral"></span><span class="demo-dot d-amber"></span><span class="demo-dot d-mint"></span><span class="exercise-toplabel">' + getExerciseTaskLabel() + '</span></div>' +
       '<div class="exercise-progress-pill" id="lessonScorePill">' + step.questionNumber + '/' + getLessonQuestionTotal() + ' · <span class="lesson-pass-note">' + txt('mín. ', 'min. ') + PASSING_SCORE + ' ' + txt('acertos', 'correct') + '</span></div>' +
       '<div class="exercise-card-body">' +
@@ -2946,8 +3012,10 @@ function handleProjectSubmit(task){
     state.taskScores[task.id] = QUESTIONS_PER_LESSON;
     scheduleReview(task.id, QUESTIONS_PER_LESSON);
 
+    const levelBeforeXp = getRawUserXp();
+    let rewardInfo = { oldXp:levelBeforeXp, newXp:levelBeforeXp, gained:0 };
     if(!wasAlreadyDone){
-      state.xp += task.xp;
+      rewardInfo = addUserXp(PROJECT_XP_REWARD);
       state.todayCompletions = state.todayCompletions || {};
       const todayKey = getTodayKey();
       state.todayCompletions[todayKey] = Number(state.todayCompletions[todayKey] || 0) + 1;
@@ -2956,6 +3024,7 @@ function handleProjectSubmit(task){
 
     saveState();
     notifyNewAchievementUnlocks(achievementBefore);
+    if(!wasAlreadyDone) notifyLevelUps(levelBeforeXp, rewardInfo.newXp);
     notifyCompletedModules();
 
     fb.innerHTML =
@@ -2963,7 +3032,7 @@ function handleProjectSubmit(task){
       '<span><strong>' + txt('Projeto aprovado.', 'Project approved.') + '</strong><br>' + (task.project && task.project.language === 'python' ? txt('Seu código usa os conceitos Python pedidos para iniciantes.', 'Your code uses the beginner Python concepts requested.') : txt('Seu código usa os conceitos JavaScript pedidos para iniciantes.', 'Your code uses the beginner JavaScript concepts requested.')) + '<br>' +
       result.suggestions.map(s => '• ' + s).join('<br>') + '</span>';
 
-    consoleBox.innerHTML = '<span class="terminal-prompt">mycode&gt;</span> ' + txt('Projeto aprovado.', 'Project approved.') + ' +' + (wasAlreadyDone ? 0 : task.xp) + ' XP';
+    consoleBox.innerHTML = '<span class="terminal-prompt">mycode&gt;</span> ' + txt('Projeto aprovado.', 'Project approved.') + ' +' + (wasAlreadyDone ? 0 : PROJECT_XP_REWARD) + ' XP';
 
     checkBtn.textContent = txt('voltar ao painel', 'back to panel');
     checkBtn.onclick = () => {
@@ -3600,9 +3669,9 @@ function renderComplete(){
 
   const achievementBefore = getUnlockedAchievementIdsForToast();
   const wasAlreadyDone = !!state.completed[activeTask.id];
-  const baseXp = activeTask.xp;
-  const xpFactor = lessonCorrect >= 7 ? 1 : (lessonCorrect >= 6 ? .85 : .60);
-  const earnedXp = wasAlreadyDone ? 0 : Math.round(baseXp * xpFactor);
+  const levelBeforeXp = getRawUserXp();
+  const rewardInfo = wasAlreadyDone ? { oldXp:levelBeforeXp, newXp:levelBeforeXp, gained:0 } : addUserXp(TASK_XP_REWARD);
+  const earnedXp = rewardInfo.gained;
 
   state.taskScores = state.taskScores || {};
   state.attempts = state.attempts || {};
@@ -3613,7 +3682,6 @@ function renderComplete(){
 
   if(!wasAlreadyDone){
     state.completed[activeTask.id] = true;
-    state.xp += earnedXp;
     state.todayCompletions = state.todayCompletions || {};
     const todayKey = getTodayKey();
     state.todayCompletions[todayKey] = Number(state.todayCompletions[todayKey] || 0) + 1;
@@ -3621,6 +3689,7 @@ function renderComplete(){
   }
   saveState();
   notifyNewAchievementUnlocks(achievementBefore);
+  if(!wasAlreadyDone) notifyLevelUps(levelBeforeXp, rewardInfo.newXp);
   notifyCompletedModules();
 
   const masteryLabel = lessonCorrect >= 7 ? txt('dominado','mastered') : (lessonCorrect >= 6 ? txt('aprendido','learned') : txt('passou, mas revise','passed, but review'));
@@ -4499,13 +4568,16 @@ function wireCertificateEntryPoints(){
     adminUnlockBtnTop.dataset.certAdminWired = 'true';
     adminUnlockBtnTop.addEventListener('click', () => {
       state.adminUnlocked = true;
+      ensureAdminMaxProgress();
       saveState();
       updateCertificateSummary();
       if(pageCertificates && pageCertificates.classList.contains('active')) renderCertificatesPage();
       const adminBtn = document.getElementById('adminUnlockBtnTop');
       if(adminBtn) adminBtn.textContent = 'Admin ✓';
+      renderTopStats();
       renderProfileWidgets();
       renderAchievementsModal();
+      renderArenaCard();
     });
   }
 }
@@ -5218,7 +5290,7 @@ const DAILY_ARENA_CHALLENGES = [
 let arenaSession = null;
 let arenaTimerId = null;
 function arenaDefaultState(){ return { history: [], attempts: {}, rp: 0, bestScore: 0, streak: 0, lastPlayedDate: null }; }
-function loadArenaState(){ try{ const raw=localStorage.getItem(ARENA_STORAGE_KEY); if(raw) return Object.assign(arenaDefaultState(), JSON.parse(raw)); }catch(e){} return arenaDefaultState(); }
+function loadArenaState(){ try{ const raw=localStorage.getItem(ARENA_STORAGE_KEY); const data = raw ? Object.assign(arenaDefaultState(), JSON.parse(raw)) : arenaDefaultState(); if(state && state.adminUnlocked){ data.rp = Math.max(Number(data.rp || 0), MAX_RANKED_RP); data.bestScore = Math.max(Number(data.bestScore || 0), 150); } return data; }catch(e){} const fallback = arenaDefaultState(); if(state && state.adminUnlocked){ fallback.rp = MAX_RANKED_RP; fallback.bestScore = 150; } return fallback; }
 function saveArenaState(data){ localStorage.setItem(ARENA_STORAGE_KEY, JSON.stringify(data)); }
 function arenaDateKey(date=new Date()){ const y=date.getFullYear(); const m=String(date.getMonth()+1).padStart(2,'0'); const d=String(date.getDate()).padStart(2,'0'); return y+'-'+m+'-'+d; }
 function arenaYesterdayKey(){ const d=new Date(); d.setDate(d.getDate()-1); return arenaDateKey(d); }
@@ -5230,26 +5302,24 @@ function arenaChallengeExplanation(challenge){ return getLang()==='en'?challenge
 function arenaLeague(rp){ if(rp>=2000)return txt('Diamante','Diamond'); if(rp>=1500)return txt('Platina','Platinum'); if(rp>=1000)return txt('Ouro','Gold'); if(rp>=500)return txt('Prata','Silver'); return txt('Bronze','Bronze'); }
 function arenaLeagueKey(rp){ rp=Number(rp)||0; if(rp>=2000)return 'diamond'; if(rp>=1500)return 'platinum'; if(rp>=1000)return 'gold'; if(rp>=500)return 'silver'; return 'bronze'; }
 function arenaRankPixelArt(key){
-  const palettes={
-    bronze:['#7A4022','#C47A43','#F1B06B','#3B2418'],
-    silver:['#6B7D91','#D9E6F3','#FFFFFF','#2F3B4A'],
-    gold:['#8C5D05','#FFC83D','#FFF0A3','#3C2A05'],
-    platinum:['#118B8C','#8DFFF2','#FFFFFF','#063A44'],
-    diamond:['#2459B8','#7AD7FF','#FFFFFF','#10264F']
-  };
-  const p=palettes[key]||palettes.bronze;
-  const shapes={
-    bronze:[[2,0,3,0,4,0],[1,1,2,1,3,1,4,1,5,1],[1,2,2,2,3,2,4,2,5,2],[2,3,3,3,4,3],[3,4]],
-    silver:[[3,0],[2,1,3,1,4,1],[1,2,2,2,3,2,4,2,5,2],[1,3,2,3,3,3,4,3,5,3],[2,4,3,4,4,4],[3,5]],
-    gold:[[1,1,3,0,5,1],[1,2,2,2,3,2,4,2,5,2],[1,3,2,3,3,3,4,3,5,3],[2,4,3,4,4,4]],
-    platinum:[[3,0],[2,1,3,1,4,1],[1,2,2,2,3,2,4,2,5,2],[2,3,3,3,4,3],[2,4,3,4,4,4],[3,5]],
-    diamond:[[3,0],[2,1,3,1,4,1],[1,2,2,2,3,2,4,2,5,2],[2,3,3,3,4,3],[3,4]]
-  };
-  const rows=shapes[key]||shapes.bronze;
-  let rects='<rect x="8" y="8" width="20" height="20" rx="2" fill="rgba(0,0,0,.28)"/>';
-  rows.forEach((row,y)=>row.forEach(x=>{ const fill=(y<=1||x===3)?p[2]:(y>=4?p[0]:p[1]); rects+='<rect x="'+(4+x*4)+'" y="'+(4+y*4)+'" width="4" height="4" fill="'+fill+'"/>'; }));
-  rects+='<rect x="'+(4+3*4)+'" y="'+(4+2*4)+'" width="4" height="4" fill="'+p[2]+'" opacity=".95"/>';
-  return '<span class="rank-pixel-icon" aria-hidden="true"><svg viewBox="0 0 36 36" shape-rendering="crispEdges" focusable="false">'+rects+'</svg></span>';
+  const cfg={
+    bronze:{name:'B',a:'#7B421F',b:'#C47A43',c:'#FFD0A1',d:'#3A2114'},
+    silver:{name:'S',a:'#637083',b:'#D8E4F2',c:'#FFFFFF',d:'#263241'},
+    gold:{name:'G',a:'#8C5D05',b:'#FFC83D',c:'#FFF1A8',d:'#3B2600'},
+    platinum:{name:'P',a:'#0B7D83',b:'#7DFFF2',c:'#FFFFFF',d:'#053944'},
+    diamond:{name:'D',a:'#2459B8',b:'#72D6FF',c:'#FFFFFF',d:'#101F53'}
+  }[key]||{name:'B',a:'#7B421F',b:'#C47A43',c:'#FFD0A1',d:'#3A2114'};
+  const px=[];
+  const add=(x,y,w,h,fill,op)=>px.push('<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+fill+'"'+(op?' opacity="'+op+'"':'')+'/>');
+  // outer shield silhouette
+  [[14,2,20,4,cfg.c],[10,6,28,4,cfg.b],[6,10,36,8,cfg.b],[4,18,40,12,cfg.a],[8,30,32,8,cfg.a],[12,38,24,6,cfg.d],[18,44,12,4,cfg.d]].forEach(p=>add(p[0],p[1],p[2],p[3],p[4]));
+  // dark contour pixels
+  [[10,2,4,4],[34,2,4,4],[6,6,4,4],[38,6,4,4],[2,14,4,18],[42,14,4,18],[8,34,4,4],[36,34,4,4],[14,42,4,4],[30,42,4,4]].forEach(p=>add(p[0],p[1],p[2],p[3],cfg.d));
+  // highlight and inner badge
+  add(14,10,8,4,cfg.c,.95); add(10,14,8,4,cfg.c,.78); add(28,12,8,4,cfg.c,.72);
+  add(16,18,16,16,'rgba(0,0,0,.26)'); add(20,20,8,4,cfg.c); add(20,28,8,4,cfg.c);
+  // tier letter using blocky text fallback
+  return '<span class="rank-pixel-icon rank-pixel-'+key+'" aria-hidden="true"><svg viewBox="0 0 48 48" shape-rendering="crispEdges" focusable="false">'+px.join('')+'<text x="24" y="30" text-anchor="middle" font-size="12" font-family="monospace" font-weight="900" fill="'+cfg.c+'">'+cfg.name+'</text></svg></span>';
 }
 function arenaLeagueBadge(rp){ const key=arenaLeagueKey(rp); return '<span class="ranked-league-badge ranked-league-'+key+'">'+arenaRankPixelArt(key)+'<strong>'+arenaLeague(rp)+'</strong></span>'; }
 
