@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCode — aprenda a programar do zero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/png" href="./assets/byte.png">
+<link rel="apple-touch-icon" href="./assets/byte.png">
+<meta name="theme-color" content="#090B0F">
+
+<link rel="stylesheet" href="./styles/main.css">
+
+</head>
+<body>
+
+<div class="app-topbar">
+  <div class="app-topbar-inner">
+    <div class="topbar-left">
+      <button class="dock-brand" id="brandBtn" title="Voltar para a página inicial">
+        <img src="./assets/byte.png" alt="Byte" class="brand-byte-logo">
+        <span class="brand-text">MyCode</span>
+      </button>
+    </div>
+
+    <div class="topbar-center">
+      <button class="dock-pill action-pill" id="navModulesBtn" type="button">Módulos</button>
+      <button class="dock-pill action-pill" id="navPracticeBtnTop" type="button">Prática livre</button>
+      <button class="dock-pill action-pill arena-pill" id="navArenaBtnTop" type="button">Ranked</button>
+      <button class="dock-pill action-pill" id="profileBtnTop" type="button">Perfil</button>
+      <button class="dock-pill action-pill admin-pill" id="adminUnlockBtnTop" type="button">Admin</button>
+      <button class="dock-pill action-pill" id="navResetBtnTop" type="button">Limpar progresso</button>
+    </div>
+
+    <div class="language-switcher" id="languageSwitcher" aria-label="Selecionar idioma">
+      <button class="lang-btn" id="langPtBtn" type="button" title="Português do Brasil" aria-label="Português do Brasil"><img src="./assets/generated/inline-6bcdd326f2.svg" alt="BR"></button>
+      <button class="lang-btn" id="langEnBtn" type="button" title="English" aria-label="English"><img src="./assets/generated/inline-c18f4e6ff6.svg" alt="US"></button>
+    </div>
+
+    <div class="topbar-right topbar-hidden-tools" aria-hidden="true">
+      <div class="dock-pill floating-stats" id="appStats" style="display:none;">
+        <span class="mini-stat streak" id="streakStat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c2 4-3 6-3 10a3 3 0 006 0c0-1-.5-2-1-3 2 1 3 3 3 5a5 5 0 01-10 0c0-4 3-6 5-12z"/></svg>
+          <span id="streakCount">0</span>
+        </span>
+        <span class="mini-divider"></span>
+        <span class="mini-stat xp" id="xpStat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.4 5.7 21l2.3-7.2L2 9.2h7.6z"/></svg>
+          <span id="xpCount">Lv. 1</span><small id="xpDetail" class="xp-detail">0/100 XP</small>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 1: LANDING ============ -->
+<div class="page active" id="pageLanding">
+
+  <section class="landing">
+    <div class="landing-inner">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">trilha guiada de programação</div>
+          <h1>Aprenda a <span class="glow">programar</span><br>do <span class="typewriter" id="typewriter">zero</span></h1>
+          <p class="hero-sub">Uma jornada pensada para iniciantes reais: <strong>130 tarefas</strong> divididas em 13 módulos, começando pelo primeiro contato, evoluindo por variáveis, tipos, operadores, decisões, loops, listas, Python, JavaScript, DOM e APIs.</p>
+          <div class="hero-cta-row">
+            <button class="btn primary big" id="startBtn">
+              comece agora
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button class="btn ghost-link" id="howBtn">como funciona</button>
+          </div>
+          <div class="hero-microstats">
+            <div class="microstat"><span class="n">130</span> tarefas</div>
+            <div class="microstat-dot"></div>
+            <div class="microstat"><span class="n">13</span> módulos</div>
+            <div class="microstat-dot"></div>
+            <div class="microstat"><span class="n">100%</span> guiado em português</div>
+          </div>
+          <div class="hero-feature-strip">
+            <div class="hero-feature"><div class="hf-icon">01</div><strong>Aprenda antes de responder</strong><span>Cada fase ensina o conceito, mostra exemplo e reforça o erro comum.</span></div>
+            <div class="hero-feature"><div class="hf-icon">&gt;_</div><strong>Digite como dev</strong><span>Complete código e responda em editor/terminal, como em um ambiente de dev.</span></div>
+            <div class="hero-feature"><div class="hf-icon">4/7</div><strong>Passe com 4/7</strong><span>Cada tarefa exige no mínimo 4 acertos em 7 perguntas para liberar a próxima.</span></div>
+          </div>
+        </div>
+
+        <div class="hero-demo" aria-hidden="true">
+          <div class="demo-window">
+            <div class="demo-bar">
+              <span class="demo-dot d-coral"></span><span class="demo-dot d-amber"></span><span class="demo-dot d-mint"></span>
+              <span class="demo-bar-label">módulo 3 · loops</span>
+            </div>
+            <div class="demo-body">
+              <div class="demo-kicker">rastreie o código</div>
+              <div class="demo-q">Quantas vezes <span class="demo-hl">"oi"</span> é impresso?</div>
+              <pre class="demo-code"><span class="dc-kw">for</span> (let i = <span class="dc-num">0</span>; i &lt; <span class="dc-num">3</span>; i = i + <span class="dc-num">1</span>) {
+  print(<span class="dc-str">"oi"</span>);
+}</pre>
+              <div class="demo-opts">
+                <div class="demo-opt" id="demoOpt0"><span class="demo-letter">A</span>2 vezes</div>
+                <div class="demo-opt" id="demoOpt1"><span class="demo-letter">B</span>3 vezes</div>
+                <div class="demo-opt" id="demoOpt2"><span class="demo-letter">C</span>infinitas vezes</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-byte-float" aria-hidden="true">
+            <span class="byte-spark s1"></span>
+            <span class="byte-spark s2"></span>
+            <span class="byte-spark s3"></span>
+            <span class="byte-code-bit bit-1">&lt;/&gt;</span>
+            <span class="byte-code-bit bit-2">{ }</span>
+            <span class="byte-code-bit bit-3">JS</span>
+            <div class="hero-byte-orb">
+              <div class="byte-animated-wrap">
+                <img src="./assets/byte.png" alt="" class="hero-byte-img">
+              </div>
+            </div>
+            <div class="byte-shadow"></div>
+            <div class="landing-byte-callout"><strong>Byte:</strong> comece sem pular lógica.</div>
+            <div class="hero-byte-pill"><span class="dot"></span><span>mascote</span><strong>Byte</strong></div>
+          </div>
+          <div class="demo-float-card xp-float">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.4 5.7 21l2.3-7.2L2 9.2h7.6z"/></svg>
+            +45 xp
+          </div>
+          <div class="demo-float-card streak-float">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c2 4-3 6-3 10a3 3 0 006 0c0-1-.5-2-1-3 2 1 3 3 3 5a5 5 0 01-10 0c0-4 3-6 5-12z"/></svg>
+            sequência de 4 dias
+          </div>
+        </div>
+      </div>
+
+      <button class="scroll-cue" id="scrollCue">
+        <span>como funciona</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="section" id="howSection">
+    <div class="section-inner">
+      <div class="section-eyebrow">como funciona</div>
+      <h2 class="section-title">Como o aprendizado acontece</h2>
+      <div class="how-grid">
+        <div class="how-card"><div class="how-num">01</div>
+          <div class="how-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <h3>Você aprende o conceito do zero</h3>
+          <p>Antes de responder, você recebe uma explicação pensada para quem nunca programou, com exemplos e linguagem simples.</p>
+        </div>
+        <div class="how-card"><div class="how-num">02</div>
+          <div class="how-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          <h3>Você pratica em rampas curtas</h3>
+          <p>As perguntas começam no nível certo e só sobem quando o fundamento anterior já foi consolidado.</p>
+        </div>
+        <div class="how-card"><div class="how-num">03</div>
+          <div class="how-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c2 4-3 6-3 10a3 3 0 006 0c0-1-.5-2-1-3 2 1 3 3 3 5a5 5 0 01-10 0c0-4 3-6 5-12z"/></svg></div>
+          <h3>Você aprende com meta clara</h3>
+          <p>Além do XP e da sequência, cada fase exige um mínimo de acertos para garantir que você realmente entendeu.</p>
+        </div>
+        <div class="how-card"><div class="how-num">04</div>
+          <div class="how-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          <h3>Tudo se conecta</h3>
+          <p>O módulo seguinte reaproveita o que você já dominou, criando uma base sólida em vez de pular etapas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">por que assim</div>
+      <h2 class="section-title">Feito para quem começa do absoluto zero</h2>
+      <p class="section-sub">A maior parte dos cursos acelera demais. Aqui, cada conceito só aparece quando o anterior já foi explicado, praticado e compreendido.</p>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div>
+          <h3>Um conceito por vez</h3>
+          <p>Nada de despejar vários assuntos de uma vez. Cada tarefa trabalha um foco principal e vai aumentando a segurança do aluno.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon c2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <h3>Dificuldade em rampa</h3>
+          <p>Dentro da tarefa, a dificuldade sobe em rampa: primeiro entender, depois aplicar, depois combinar ideias.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon c3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <h3>Sem pressa, sem prazo</h3>
+          <p>Você pode estudar no seu tempo. O progresso fica salvo no navegador e a trilha continua de onde parou.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section module-section">
+    <div class="section-inner">
+      <div class="section-eyebrow">módulos da trilha</div>
+      <h2 class="section-title">Uma jornada em 13 módulos</h2>
+      <p class="section-sub">Primeiro você constrói a base de raciocínio, depois aprende a escrever em JavaScript e por fim combina as estruturas para resolver problemas.</p>
+      <div class="module-grid">
+        <div class="module-card">
+          <div class="module-chip">módulo 1</div>
+          <h3>Fundamentos e lógica da programação</h3>
+          <p>10 tarefas para construir a base: instruções, sequência, algoritmo, entrada/saída, valores, variáveis, comparações e decisões.</p>
+          <ul>
+            <li>Do zero absoluto ao primeiro raciocínio lógico</li>
+            <li>Sem exigir JavaScript antes da hora</li>
+            <li>Base sólida para entrar em código real</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 2</div>
+          <h3>Introdução ao JavaScript</h3>
+          <p>10 tarefas para transformar lógica em JavaScript real: console, sintaxe, variáveis, tipos, operadores, if/else e funções.</p>
+          <ul>
+            <li>Primeiros comandos reais</li>
+            <li>Tipos, expressões e condições</li>
+            <li>Funções e organização básica</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 3</div>
+          <h3>Lógica com JavaScript</h3>
+          <p>10 tarefas para aplicar a linguagem em problemas: loops, arrays, objetos, acumuladores, filtros, depuração e mini projeto.</p>
+          <ul>
+            <li>Repetição e listas</li>
+            <li>Objetos e funções com dados</li>
+            <li>Mini algoritmos guiados</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 4</div>
+          <h3>DOM e interfaces</h3>
+          <p>10 tarefas para ligar JavaScript à tela: DOM, seletores, conteúdo, classes, eventos, inputs, validação, estado e projeto.</p>
+          <ul>
+            <li>Lógica de interface real</li>
+            <li>Eventos e renderização</li>
+            <li>Projeto de lista interativa</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 5</div>
+          <h3>Dados e JavaScript moderno</h3>
+          <p>10 tarefas com map, filter, reduce, busca, desestruturação, spread, ordenação, encadeamento e projeto de despesas.</p>
+          <ul>
+            <li>Transformação de dados</li>
+            <li>Sintaxe moderna</li>
+            <li>Projeto de resumo de despesas</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 6</div>
+          <h3>Projetos assíncronos e APIs</h3>
+          <p>10 tarefas sobre JSON, Promise, async/await, fetch, try/catch, loading, localStorage e painel final.</p>
+          <ul>
+            <li>Fluxo assíncrono</li>
+            <li>Tratamento de erros</li>
+            <li>Projeto final estilo API</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 7</div>
+          <h3>DOM e interfaces</h3>
+          <p>10 tarefas para ligar código à tela.</p>
+          <ul><li>Interface</li><li>Eventos</li><li>Projeto guiado</li></ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 8</div>
+          <h3>Dados e JavaScript moderno</h3>
+          <p>10 tarefas para transformar dados.</p>
+          <ul><li>Dados</li><li>Sintaxe moderna</li><li>Projeto guiado</li></ul>
+        </div>
+        <div class="module-card">
+          <div class="module-chip">módulo 9</div>
+          <h3>Projetos assíncronos e APIs</h3>
+          <p>10 tarefas para trabalhar com APIs.</p>
+          <ul><li>Assíncrono</li><li>Erros</li><li>Projeto final</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">a trilha completa</div>
+      <h2 class="section-title">130 tarefas organizadas em 13 módulos</h2>
+      <p class="section-sub">O módulo 1 tem 20 tarefas de fundamentos e os demais têm 10. A dificuldade sobe em microetapas, sem exigir sintaxe antes da lógica.</p>
+      <div class="roadmap-list" id="roadmapList"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">perguntas frequentes</div>
+      <h2 class="section-title">Antes de começar</h2>
+      <div class="faq-list" id="faqList">
+        <div class="faq-item">
+          <button class="faq-q">Preciso saber alguma coisa antes de começar?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-a">Não. A trilha foi pensada para quem nunca escreveu uma linha de código. A primeira tarefa começa explicando o que é um programa, uma instrução e como ler código do zero.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Preciso criar uma conta?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-a">Não. Seu progresso, XP e sequência ficam salvos neste navegador, sem cadastro nem senha. Se limpar os dados do navegador, o progresso se perde.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">As tarefas usam uma linguagem de programação específica?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-a">Você começa por lógica, depois Python e só então JavaScript, DOM e APIs. Assim cada sintaxe nova reaproveita uma ideia já entendida.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">O que acontece se eu errar muito?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-a">Cada tarefa tem 3 vidas e exige pelo menos 4 acertos em 7 perguntas para passar. Se não alcançar isso, você revisa e tenta novamente.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <div class="final-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <h2>Pronto para começar pelo básico do básico?</h2>
+      <p>Comece pelo módulo 1 e avance no seu ritmo. Sem cadastro, sem pressão e com progressão realmente didática.</p>
+      <button class="btn primary big" id="startBtn2">
+        comece agora
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <footer class="site-footer">feito para quem nunca escreveu uma linha de código</footer>
+</div>
+
+<!-- ============ PAGE 2: PAINEL DE TAREFAS ============ -->
+<div class="page" id="pagePanel">
+  <div class="panel-shell">
+    <div class="panel-topbar-clean">
+      <button class="back-link" id="backToLanding">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        voltar para a página inicial
+      </button>
+
+      <div class="panel-top-status">
+        <span id="selectedSummary">0/130 tarefas concluídas</span>
+        <button class="reset-link" id="resetBtn">Reiniciar progresso</button>
+      </div>
+    </div>
+
+    <section class="study-dashboard-clean">
+      <header class="study-hero-clean" id="studyHeroClean">
+        <button class="panel-hero-close" id="panelHeroCloseBtn" type="button" aria-label="Fechar painel de introdução">×</button>
+        <div class="study-title-area">
+          <div class="panel-eyebrow-clean">painel de estudos · experiência guiada</div>
+          <h1>Painel de tarefas</h1>
+          <p>Selecione um módulo no topo, acompanhe o progresso geral e avance pelas tarefas em uma interface mais limpa, animada e focada no estudo.</p>
+        </div>
+
+        <div class="overall-card-clean">
+          <div class="overall-card-top">
+            <span>progresso geral</span>
+            <strong id="overallLabel">0 de 130 concluídas</strong>
+          </div>
+          <div class="panel-progress-shell"><div class="panel-progress-fill" id="overallFill" style="width:0%"></div></div>
+        </div>
+      </header>
+
+      <div class="module-tabs-clean" id="moduleProgressBoard"></div>
+
+      <div class="workspace-layout-clean">
+        <main class="tasks-workspace-clean">
+          <div class="workspace-head-clean">
+            <div>
+              <span class="workspace-kicker" id="activeModuleKicker">módulo atual</span>
+              <h2 id="activeModuleTitle">Fundamentos e lógica da programação</h2>
+              <p id="activeModuleDescription">Selecione um módulo para ver a sequência de tarefas.</p>
+            </div>
+            <div class="workspace-progress-box">
+              <strong id="activeModuleRatio">0/10</strong>
+              <span id="activeModulePercent">0% completo</span>
+            </div>
+          </div>
+
+          <div class="task-grid" id="taskGrid"></div>
+        </main>
+
+        <aside class="study-sidebar-clean">
+          <div class="side-card-clean badges-side-card priority-side-card">
+            <div class="side-label-clean">conquistas equipadas</div>
+            <div class="badge-list" id="badgeList"></div>
+          </div>
+
+          
+
+          
+
+          <div class="side-card-clean world-ranking-card" id="worldRankingCard">
+            <div class="ranking-card-head">
+              <div>
+                <div class="side-label-clean">ranking mundial</div>
+                <strong id="worldRankingTitle">Top 10 devs de hoje</strong>
+              </div>
+              <span class="ranking-live-pill">LIVE</span>
+            </div>
+            <div class="world-ranking-list" id="worldRankingTop10"></div>
+            <button class="side-action-btn compact ranking-open-btn" id="openWorldRankingBtn" type="button">
+              <span>↗</span><div><strong>Ver ranking completo</strong><small>classificação geral</small></div>
+            </button>
+          </div>
+
+          <div class="side-card-clean profile-side-card">
+            <div class="side-label-clean">perfil do aluno</div>
+            <div class="profile-mini-grid">
+              <div><strong id="profileXP">1</strong><span>nível</span></div>
+              <div><strong id="profileDone">0/130</strong><span>tarefas</span></div>
+              <div><strong id="profileDominated">0</strong><span>dominadas</span></div>
+              <div><strong id="profileWeak">0</strong><span>revisões</span></div>
+            </div>
+          </div>
+
+          
+
+<div class="side-card-clean adaptive-side-card" id="adaptiveCard">
+            <div class="side-label-clean">trilha adaptativa</div>
+            <strong id="adaptiveTitle">Nenhum reforço pendente</strong>
+            <p id="adaptiveText">Quando o aluno errar muito, o MyCode recomenda microtarefas antes de avançar.</p>
+            <button class="side-action-btn compact" id="adaptivePracticeBtn" type="button"><span>↯</span><div><strong>Treinar ponto fraco</strong><small>microtarefas guiadas</small></div></button>
+          </div>
+
+<div class="side-card-clean daily-clean">
+            <div>
+              <div class="side-label-clean">meta diária</div>
+              <strong id="dailyGoalText">Conclua 2 tarefas hoje</strong>
+            </div>
+            <div class="goal-ring" id="goalRing" style="--goal:0%"><span id="goalRingText">0/2</span></div>
+          </div>
+
+          <div class="side-card-clean cert-clean" id="certificatesCard">
+            <div class="cert-icon-clean">★</div>
+            <div>
+              <div class="side-label-clean">certificados</div>
+              <strong id="certificatesLabel">0/3 liberados</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay">
+  <div class="lesson-head">
+    <button class="icon-btn" id="closeLesson" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <button class="lesson-back-btn" id="backLessonBtn" type="button" aria-label="Voltar para o painel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>voltar</span>
+    </button>
+    <div class="step-dots" id="stepDots"></div>
+    <div class="lesson-hearts" id="heartsWrap">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.5-9.5-9C.7 8.5 2 5 5.5 5c2 0 3.4 1 4.5 2.5C11.1 6 12.5 5 14.5 5 18 5 19.3 8.5 17.5 12 15 16.5 8 21 8 21"/></svg>
+      <span id="heartsCount">3</span>
+    </div>
+  </div>
+  
+  <button class="lesson-floating-back" id="lessonFloatingBackBtn" type="button" aria-label="Voltar para o painel de tarefas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>voltar ao painel</span>
+  </button>
+  <div class="lesson-body"><div class="lesson-inner" id="lessonInner"></div></div>
+  <div class="lesson-footer">
+    <button class="btn primary" id="checkBtn" disabled>continuar</button>
+  </div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
