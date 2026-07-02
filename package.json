@@ -1,0 +1,21 @@
+{
+  "name": "mycode",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A gamified programming learning platform with progressive lessons, Ranked mode, achievements, certificates, and local progress tracking.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "check": "node --check src/runtime/appRuntime.js && node scripts/validate-content.mjs",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "eslint": "latest",
+    "prettier": "latest",
+    "vite": "latest"
+  }
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24">
+<defs>
+<linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#ffffff" stop-opacity=".18"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+</defs>
+<rect x="0.75" y="0.75" width="34.5" height="22.5" rx="5.2" fill="#fff" stroke="#243548" stroke-width="1.5"/>
+<g clip-path="url(#c)">
+<rect width="36" height="24" rx="5.2" fill="#fff"/>
+<rect y="0" width="36" height="24" fill="#fff"/>
+<g fill="#e25555">
+<rect y="0" width="36" height="2.1"/><rect y="4.2" width="36" height="2.1"/><rect y="8.4" width="36" height="2.1"/><rect y="12.6" width="36" height="2.1"/><rect y="16.8" width="36" height="2.1"/><rect y="21" width="36" height="2.1"/>
+</g>
+<rect width="15.5" height="11.4" fill="#3491ff"/>
+<g fill="#fff" opacity=".95">
+<circle cx="2.6" cy="2.3" r=".65"/><circle cx="5.8" cy="2.3" r=".65"/><circle cx="9" cy="2.3" r=".65"/><circle cx="12.2" cy="2.3" r=".65"/>
+<circle cx="4.2" cy="4.4" r=".65"/><circle cx="7.4" cy="4.4" r=".65"/><circle cx="10.6" cy="4.4" r=".65"/><circle cx="13.8" cy="4.4" r=".65"/>
+<circle cx="2.6" cy="6.5" r=".65"/><circle cx="5.8" cy="6.5" r=".65"/><circle cx="9" cy="6.5" r=".65"/><circle cx="12.2" cy="6.5" r=".65"/>
+<circle cx="4.2" cy="8.6" r=".65"/><circle cx="7.4" cy="8.6" r=".65"/><circle cx="10.6" cy="8.6" r=".65"/><circle cx="13.8" cy="8.6" r=".65"/>
+</g>
+</g>
+<rect x="1" y="1" width="34" height="22" rx="5" fill="url(#g)"/>
+<defs><clipPath id="c"><rect width="36" height="24" rx="5.2"/></clipPath></defs>
+</svg>

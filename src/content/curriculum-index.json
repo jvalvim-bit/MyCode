@@ -1,0 +1,162 @@
+{
+  "pt": [
+    {
+      "id": 1,
+      "module": "O Primeiro Contato",
+      "file": "module-01-o-primeiro-contato.js",
+      "tasks": 10
+    },
+    {
+      "id": 2,
+      "module": "Caixas de Memória",
+      "file": "module-02-caixas-de-memoria.js",
+      "tasks": 10
+    },
+    {
+      "id": 3,
+      "module": "Tipos de Dados",
+      "file": "module-03-tipos-de-dados.js",
+      "tasks": 10
+    },
+    {
+      "id": 4,
+      "module": "Operadores e Pequenos Cálculos",
+      "file": "module-04-operadores-e-pequenos-calculos.js",
+      "tasks": 10
+    },
+    {
+      "id": 5,
+      "module": "Tomada de Decisões",
+      "file": "module-05-tomada-de-decisoes.js",
+      "tasks": 10
+    },
+    {
+      "id": 6,
+      "module": "Repetições Sem Medo",
+      "file": "module-06-repeticoes-sem-medo.js",
+      "tasks": 10
+    },
+    {
+      "id": 7,
+      "module": "Agrupando Dados",
+      "file": "module-07-agrupando-dados.js",
+      "tasks": 10
+    },
+    {
+      "id": 8,
+      "module": "Python do Zero Aplicado",
+      "file": "module-08-python-do-zero-aplicado.js",
+      "tasks": 10
+    },
+    {
+      "id": 9,
+      "module": "Python: Coleções e Fluxo",
+      "file": "module-09-python-colecoes-e-fluxo.js",
+      "tasks": 10
+    },
+    {
+      "id": 10,
+      "module": "Python: Funções, Arquivos e Erros",
+      "file": "module-10-python-funcoes-arquivos-e-erros.js",
+      "tasks": 10
+    },
+    {
+      "id": 11,
+      "module": "JavaScript do Zero Aplicado",
+      "file": "module-11-javascript-do-zero-aplicado.js",
+      "tasks": 10
+    },
+    {
+      "id": 12,
+      "module": "DOM e Interfaces",
+      "file": "module-12-dom-e-interfaces.js",
+      "tasks": 10
+    },
+    {
+      "id": 13,
+      "module": "Dados Modernos e APIs",
+      "file": "module-13-dados-modernos-e-apis.js",
+      "tasks": 10
+    }
+  ],
+  "en": [
+    {
+      "id": 1,
+      "module": "First Contact",
+      "file": "module-01-first-contact.js",
+      "tasks": 10
+    },
+    {
+      "id": 2,
+      "module": "Memory Boxes",
+      "file": "module-02-memory-boxes.js",
+      "tasks": 10
+    },
+    {
+      "id": 3,
+      "module": "Data Types",
+      "file": "module-03-data-types.js",
+      "tasks": 10
+    },
+    {
+      "id": 4,
+      "module": "Operators and Small Calculations",
+      "file": "module-04-operators-and-small-calculations.js",
+      "tasks": 10
+    },
+    {
+      "id": 5,
+      "module": "Making Decisions",
+      "file": "module-05-making-decisions.js",
+      "tasks": 10
+    },
+    {
+      "id": 6,
+      "module": "Loops Without Fear",
+      "file": "module-06-loops-without-fear.js",
+      "tasks": 10
+    },
+    {
+      "id": 7,
+      "module": "Grouping Data",
+      "file": "module-07-grouping-data.js",
+      "tasks": 10
+    },
+    {
+      "id": 8,
+      "module": "Applied Python from Zero",
+      "file": "module-08-applied-python-from-zero.js",
+      "tasks": 10
+    },
+    {
+      "id": 9,
+      "module": "Python: Collections and Flow",
+      "file": "module-09-python-collections-and-flow.js",
+      "tasks": 10
+    },
+    {
+      "id": 10,
+      "module": "Python: Functions, Files, and Errors",
+      "file": "module-10-python-functions-files-and-errors.js",
+      "tasks": 10
+    },
+    {
+      "id": 11,
+      "module": "Applied JavaScript from Zero",
+      "file": "module-11-applied-javascript-from-zero.js",
+      "tasks": 10
+    },
+    {
+      "id": 12,
+      "module": "DOM and Interfaces",
+      "file": "module-12-dom-and-interfaces.js",
+      "tasks": 10
+    },
+    {
+      "id": 13,
+      "module": "Modern Data and APIs",
+      "file": "module-13-modern-data-and-apis.js",
+      "tasks": 10
+    }
+  ]
+}
