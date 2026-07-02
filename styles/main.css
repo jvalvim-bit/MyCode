@@ -9172,3 +9172,71 @@ html.daily-byte-open body{
   .ranked-league-metric .ranked-league-badge{width:100%;}
   .student-profile-stats{grid-template-columns:1fr 1fr 1fr;}
 }
+
+
+/* v63 — ajustes do perfil do aluno, nickname e elo Ranked compacto */
+.student-name-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  max-width:100%;
+  margin:0 0 7px;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid rgba(45,245,197,.22);
+  background:rgba(45,245,197,.08);
+  color:var(--text);
+  cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.student-name-pill span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:900 12px/1 var(--font-mono);
+}
+.student-name-pill small{
+  flex:0 0 auto;
+  color:#7DF9CC;
+  font:900 8px/1 var(--font-mono);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  opacity:.9;
+}
+.student-name-pill:hover{
+  transform:translateY(-1px);
+  border-color:rgba(45,245,197,.36);
+  background:rgba(45,245,197,.13);
+}
+.ranked-league-metric{
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:104px !important;
+  padding:12px !important;
+}
+.ranked-league-metric > span:first-child{
+  margin-bottom:6px !important;
+}
+.ranked-league-metric .ranked-league-badge{
+  width:min(118px,100%) !important;
+  min-height:70px !important;
+  margin:0 auto !important;
+  padding:6px 8px 8px !important;
+  gap:4px !important;
+  border-radius:22px !important;
+}
+.ranked-league-metric .rank-pixel-icon{
+  width:50px !important;
+  height:48px !important;
+  margin:0 auto !important;
+}
+.ranked-league-metric .rank-pixel-icon svg{
+  width:50px !important;
+  height:48px !important;
+  display:block !important;
+}
+.ranked-league-metric .ranked-league-badge strong{
+  font-size:11px !important;
+  letter-spacing:.10em !important;
+}

@@ -71,7 +71,7 @@ function getLevelLabel(level){ const pair = LEVEL_LABEL[level] || [level, level]
 
 /* ---------- state ---------- */
 function loadState(){
-  const defaults = { completed: {}, xp: 0, streak: 0, lastCompletionDate: null, taskScores: {}, attempts: {}, todayCompletions: {}, expandedTaskId: null, selectedModule: null, reviewDue: {}, weakTopics: {}, badges: {}, theme: 'dark', energy: 100, adminUnlocked: false, language: 'pt', selectedPathTaskId: null, lastDailyByteReviewAt: 0, equippedAchievements: [], achievementToastNotified: [] };
+  const defaults = { completed: {}, xp: 0, streak: 0, lastCompletionDate: null, taskScores: {}, attempts: {}, todayCompletions: {}, expandedTaskId: null, selectedModule: null, reviewDue: {}, weakTopics: {}, badges: {}, theme: 'dark', energy: 100, adminUnlocked: false, language: 'pt', selectedPathTaskId: null, lastDailyByteReviewAt: 0, equippedAchievements: [], achievementToastNotified: [], studentName: '' };
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return Object.assign(defaults, JSON.parse(raw));
@@ -115,6 +115,38 @@ function ensureAdminMaxProgress(){
 
 function getLang(){ return state.language === 'en' ? 'en' : 'pt'; }
 function txt(pt, en){ return getLang() === 'en' ? en : pt; }
+function sanitizeStudentName(value){
+  return String(value || '')
+    .replace(/[<>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 24);
+}
+function getStudentDisplayName(){
+  const saved = sanitizeStudentName(state.studentName);
+  if(saved !== state.studentName){
+    state.studentName = saved;
+    saveState();
+  }
+  return saved || txt('Aluno MyCode', 'MyCode Student');
+}
+function showSimpleToast(message){
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = message;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+function promptStudentName(){
+  const current = sanitizeStudentName(state.studentName);
+  const answer = window.prompt(txt('Digite seu nome ou nickname:', 'Enter your name or nickname:'), current);
+  if(answer === null) return;
+  state.studentName = sanitizeStudentName(answer);
+  saveState();
+  renderProfileWidgets();
+  if(typeof renderWorldRankingCard === 'function') renderWorldRankingCard();
+  showSimpleToast(state.studentName ? txt('Nome do aluno atualizado.', 'Student name updated.') : txt('Nome removido. Usando padrão.', 'Name removed. Using default.'));
+}
 function syncLanguageData(){
   tasks = getLang() === 'en' ? TASKS_EN : TASKS_PT;
   document.documentElement.lang = getLang() === 'en' ? 'en' : 'pt-BR';
@@ -339,8 +371,8 @@ function updateLandingLanguage(){
   setTextBySelector('#howBtn', txt('como funciona', 'how it works'));
 
   const micro = document.querySelectorAll('.hero-microstats .microstat');
-  if(micro[0]) micro[0].innerHTML = '<span class="n">90</span> ' + txt('tarefas', 'tasks');
-  if(micro[1]) micro[1].innerHTML = '<span class="n">9</span> ' + txt('módulos', 'modules');
+  if(micro[0]) micro[0].innerHTML = '<span class="n">130</span> ' + txt('tarefas', 'tasks');
+  if(micro[1]) micro[1].innerHTML = '<span class="n">13</span> ' + txt('módulos', 'modules');
   if(micro[2]) micro[2].innerHTML = '<span class="n">100%</span> ' + txt('guiado em português', 'guided in English');
 
   const features = document.querySelectorAll('.hero-feature');
@@ -422,7 +454,7 @@ function updateLandingLanguage(){
   const moduleSection = document.querySelector('.module-section');
   if(moduleSection){
     moduleSection.querySelector('.section-eyebrow').textContent = txt('módulos da trilha', 'path modules');
-    moduleSection.querySelector('.section-title').textContent = txt('Uma jornada em 13 módulos', 'A 9-module journey');
+    moduleSection.querySelector('.section-title').textContent = txt('Uma jornada em 13 módulos', 'A 13-module journey');
     moduleSection.querySelector('.section-sub').textContent = txt(
       'Primeiro você constrói a base, depois escreve JavaScript, entra em Python, cria interfaces com DOM, trabalha dados modernos e fecha com projetos assíncronos.',
       'First you build the foundation, then write JavaScript, enter Python, create DOM interfaces, work with modern data, and finish with async projects.'
@@ -1675,11 +1707,12 @@ function renderProfileWidgets(){
     const nextText = levelInfo.level >= MAX_USER_LEVEL
       ? txt('nível máximo alcançado', 'max level reached')
       : txt(levelInfo.remaining + ' XP para o próximo level', levelInfo.remaining + ' XP to next level');
+    const studentName = getStudentDisplayName();
     badgeList.innerHTML =
       '<div class="student-profile-panel">' +
         '<div class="student-profile-hero">' +
           '<div class="student-avatar-orb"><img src="' + BYTE_IMAGE_SRC + '" alt="Byte"><span>Lv ' + levelInfo.level + '</span></div>' +
-          '<div class="student-profile-copy"><div class="student-profile-kicker">' + txt('perfil do aluno', 'student profile') + '</div><strong>' + txt('Level ', 'Level ') + levelInfo.level + '</strong><p>' + nextText + '</p></div>' +
+          '<div class="student-profile-copy"><div class="student-profile-kicker">' + txt('perfil do aluno', 'student profile') + '</div><button type="button" class="student-name-pill" id="editStudentNameBtn" aria-label="' + txt('Editar nome ou nickname do aluno', 'Edit student name or nickname') + '"><span>' + escapeHtml(studentName) + '</span><small>' + txt('editar nick', 'edit nick') + '</small></button><strong>' + txt('Level ', 'Level ') + levelInfo.level + '</strong><p>' + nextText + '</p></div>' +
         '</div>' +
         '<div class="student-level-console">' +
           '<div class="student-level-row"><span>XP</span><strong>' + levelInfo.current + '/' + levelInfo.needed + '</strong></div>' +
@@ -1698,6 +1731,8 @@ function renderProfileWidgets(){
     badgeList.querySelectorAll('[data-achievement-open]').forEach(btn => btn.addEventListener('click', showAchievementsModal));
     const manageBtn = document.getElementById('openAchievementsBtn');
     if(manageBtn) manageBtn.addEventListener('click', showAchievementsModal);
+    const editNameBtn = document.getElementById('editStudentNameBtn');
+    if(editNameBtn) editNameBtn.addEventListener('click', promptStudentName);
   }
 }
 function ensureAchievementsModal(){
@@ -1833,7 +1868,7 @@ function getWorldRankingPlayersLocal(){
     {name:'DevLua', league:'Ouro', score:121, rp:1290},
     {name:'StackHero', league:'Prata', score:116, rp:980},
     {name:'BugHunter', league:'Prata', score:109, rp:840},
-    {name:'JoaoVictor', league:'Bronze', score:102, rp:620},
+    {name:__mycodeStudentName(), league:'Bronze', score:102, rp:620},
     {name:'CodeRafa', league:'Bronze', score:98, rp:510},
     {name:'MilaDOM', league:'Bronze', score:92, rp:470},
     {name:'FetchNinja', league:'Bronze', score:87, rp:420},
@@ -5673,7 +5708,7 @@ const WORLD_RANKING_PLAYERS = [
   {name:'DevLua', league:'Ouro', score:121, rp:1290},
   {name:'StackHero', league:'Prata', score:116, rp:980},
   {name:'BugHunter', league:'Prata', score:109, rp:840},
-  {name:'JoaoVictor', league:'Bronze', score:102, rp:620},
+  {name:__mycodeStudentName(), league:'Bronze', score:102, rp:620},
   {name:'CodeRafa', league:'Bronze', score:98, rp:510},
   {name:'MilaDOM', league:'Bronze', score:92, rp:470},
   {name:'FetchNinja', league:'Bronze', score:87, rp:420},
@@ -5720,6 +5755,20 @@ function __mycodeTxt(pt,en){ return __mycodePanelLang()==='en' ? en : pt; }
 function __mycodeEsc(value){
   return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
+function __mycodeStudentName(){
+  try{
+    const raw = localStorage.getItem('codetrilha_progress_v3');
+    const parsed = raw ? JSON.parse(raw) : null;
+    const name = String(parsed && parsed.studentName ? parsed.studentName : '')
+      .replace(/[<>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 24);
+    return name || __mycodeTxt('Aluno MyCode', 'MyCode Student');
+  }catch(error){
+    return __mycodeTxt('Aluno MyCode', 'MyCode Student');
+  }
+}
 function __mycodeWorldLeague(league){
   const map={Diamante:'Diamond',Platina:'Platinum',Ouro:'Gold',Prata:'Silver',Bronze:'Bronze'};
   return __mycodePanelLang()==='en' ? (map[String(league || '')] || String(league || '')) : String(league || '');
@@ -5735,7 +5784,7 @@ function worldRankingRows(limit){
     {name:'DevLua', league:'Ouro', score:121, rp:1290},
     {name:'StackHero', league:'Prata', score:116, rp:980},
     {name:'BugHunter', league:'Prata', score:109, rp:840},
-    {name:'JoaoVictor', league:'Bronze', score:102, rp:620}
+    {name:__mycodeStudentName(), league:'Bronze', score:102, rp:620}
   ];
   return players.slice(0, limit || players.length).map((item, idx) =>
     '<div class="world-rank-row"><div class="world-rank-pos">#'+(idx+1)+'</div><div><div class="world-rank-name">'+__mycodeEsc(item.name)+'</div><span class="world-rank-meta">'+__mycodeEsc(__mycodeWorldLeague(item.league))+' · '+__mycodeEsc(item.rp)+' RP</span></div><div class="world-rank-score">'+__mycodeEsc(item.score)+' pts</div></div>'
